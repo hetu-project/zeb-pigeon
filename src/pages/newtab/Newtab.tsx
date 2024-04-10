@@ -18,6 +18,9 @@ const Newtab = () => {
   return (
     <RootProvider>
       <div
+        onContextMenu={e => {
+          e.preventDefault();
+        }}
         className={clsx(
           'App w-screen h-screen',
           theme === 'light' ? ' zm-bg-page text-white' : ' zm-bg-page text-white',

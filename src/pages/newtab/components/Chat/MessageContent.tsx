@@ -1,5 +1,6 @@
 import useStorage from '@src/shared/hooks/useStorage';
 import keystoreStorage from '@src/shared/storages/keystoreStorage';
+import MessageList from './Message/MessageList';
 
 export default function MessageContent() {
   const mainAccount = useStorage(keystoreStorage);
@@ -13,7 +14,9 @@ export default function MessageContent() {
           </div>
         </div>
       </div>
-      <div className="flex-grow"></div>
+      <div className="flex-grow overflow-scroll flex flex-col justify-end">
+        <MessageList />
+      </div>
       <div className="h-12 rounded-3xl zm-bg-card mb-3 mx-3 flex items-center px-4">
         <input className=" input input-xs bg-transparent flex-grow h-full" placeholder="Message......" />
       </div>
