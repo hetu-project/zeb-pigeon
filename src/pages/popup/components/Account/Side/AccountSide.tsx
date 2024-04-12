@@ -12,6 +12,8 @@ import { Button } from '@chakra-ui/react';
 import useStorage from '@src/shared/hooks/useStorage';
 import accountStorage from '@root/src/shared/storages/accountStorage';
 import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
+import { saveAs } from 'file-saver';
+
 interface AccountItemProps {
   address?: string;
   name?: string;
@@ -43,9 +45,7 @@ export default function AccountSide() {
   const accountsMap = useStorage(accountStorage);
   const keystoreSeeds = useStorage(keystoreStorage);
   const accounts = useMemo(() => {
-    return Object.entries(accountsMap || {}).map(([, account]) => {
-      return account;
-    });
+    return Object.entries(accountsMap || {});
   }, [accountsMap]);
   const handleActive = useCallback(
     async (account: string) => {
@@ -69,6 +69,11 @@ export default function AccountSide() {
     [keystoreSeeds],
   );
 
+  const handleExportAccount = useCallback(async () => {
+    const accountJsonFile = await accountStorage.exportAccounts();
+    const blob = new Blob([JSON.stringify(accountJsonFile)], { type: 'application/json; charset=utf-8' });
+    saveAs(blob, `z_message_account_${Date.now()}.json`);
+  }, []);
   return (
     <div className="relative">
       <div className="flex items-center text-xl">
@@ -81,16 +86,16 @@ export default function AccountSide() {
         </button>
         <div>{'Account Manage'}</div>
       </div>
-      <div className="flex flex-col gap-2 mt-10 max-h-96 overflow-scroll">
-        {accounts.map(a => {
+      <div className="flex flex-col gap-2 mt-10 max-h-80 overflow-scroll">
+        {accounts.map(([k, a]) => {
           return (
             <AccountItem
-              key={a.address}
+              key={k}
               address={a.address}
-              name={`Account_${a.address.replace(' ', '').substring(0, 6)}`}
-              onActive={() => handleActive(a.address)}
-              onEdit={() => handleEdit(a.address)}
-              onDelete={() => handleDelete(a.address)}
+              name={a.name || `Account_${a.address.replace(' ', '').substring(0, 6)}`}
+              onActive={() => handleActive(k)}
+              onEdit={() => handleEdit(k)}
+              onDelete={() => handleDelete(k)}
             />
           );
         })}
@@ -103,6 +108,14 @@ export default function AccountSide() {
             navigate('/guide');
           }}>
           Add Account
+        </Button>
+      </div>
+      <div>
+        <Button
+          className=" zm-bg-card rounded-3xl font-medium px-6 py-3 w-full mt-7"
+          leftIcon={<PlusIcon className="h-4 w-4" />}
+          onClick={handleExportAccount}>
+          Export Account
         </Button>
       </div>
     </div>

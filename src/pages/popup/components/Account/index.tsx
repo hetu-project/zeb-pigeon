@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
 import accountStorage from '@root/src/shared/storages/accountStorage';
 import { useNavigate } from 'react-router-dom';
@@ -8,21 +8,19 @@ import NetworkManage from './NetworkManage';
 
 export default function Account() {
   const keystoreSeeds = useStorage(keystoreStorage);
+  const allAccount = useStorage(accountStorage);
+
+  const activeAccount = useMemo(() => {
+    return allAccount[keystoreSeeds];
+  }, [allAccount, keystoreSeeds]);
   const navigate = useNavigate();
-  const handleRemove = useCallback(async () => {
-    const account = await keystoreStorage.get();
-    await accountStorage.remove(account);
-    await accountStorage.set({});
-    await keystoreStorage.remove();
-    const accounts = await accountStorage.get();
-    if (Object.keys(accounts || {}).length === 0) {
-      navigate('/');
-    }
+  const handleSetting = useCallback(() => {
+    navigate('/side/account');
   }, [navigate]);
   return (
     <div className=" flex flex-col">
       <div className="mt-6">
-        <AccountCard name="Account" address={keystoreSeeds} onSetting={handleRemove} />
+        <AccountCard name={activeAccount?.name} address={activeAccount?.address} onSetting={handleSetting} />
       </div>
       <div></div>
       <div className="mt-12">
