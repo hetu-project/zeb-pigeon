@@ -16,11 +16,14 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import CausalityGraphsSvg from '@assets/img/chat/CausalityGraphs.svg';
+import { useActiveAccount } from '@root/src/shared/hooks/accounts';
+import { MessageItem } from '@root/src/shared/storages/messageStorage';
 export interface MessageCardProps {
   position: 'left' | 'right';
+  message: string;
 }
 
-export function MessageCard({ position }: MessageCardProps) {
+export function MessageCard({ position = 'left', message }: MessageCardProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [showGraphs, setShowGraphs] = useState(false);
   return (
@@ -53,7 +56,7 @@ export function MessageCard({ position }: MessageCardProps) {
             e.preventDefault();
             setShowContextMenu(true);
           }}>
-          <div className="zm-message-title text-xs max-w-60">{'friend1'}</div>
+          <div className="zm-message-title text-xs max-w-60">{message}</div>
         </MenuButton>
         <MenuList className=" z-10 zm-bg-card p-2 rounded-md flex flex-col">
           <MenuItem className="p-1 hover:bg-[#4F52B2] rounded-sm" icon={<StarIcon className="w-4 h-4" />}>
@@ -114,12 +117,23 @@ export function MessageCard({ position }: MessageCardProps) {
   );
 }
 
-export default function MessageList() {
+export interface MessageListProps {
+  list?: MessageItem[];
+}
+
+export default function MessageList({ list = [] }: MessageListProps) {
+  const activeAccount = useActiveAccount();
   return (
     <div className="flex flex-col h-full overflow-hidden gap-3 justify-end py-4">
-      <MessageCard position="left" />
-      <MessageCard position="right" />
-      <MessageCard position="left" />
+      {list.map((item, index) => {
+        return (
+          <MessageCard
+            key={index}
+            position={activeAccount?.address !== item?.from ? 'left' : 'right'}
+            message={item?.message}
+          />
+        );
+      })}
     </div>
   );
 }
