@@ -3,14 +3,15 @@
 import MessageList from './Message/MessageList';
 import { useMatch } from 'react-router-dom';
 import { useContactByAddress } from '@root/src/shared/hooks/contacts';
-import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
-import { useCallback , useEffect , useMemo } from 'react';
+import { PaperAirplaneIcon, TicketIcon } from '@heroicons/react/24/solid';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Button } from '@chakra-ui/react';
 
 import { useForm } from 'react-hook-form';
 import { useChatApi } from '@root/src/shared/hooks/chat';
 import { useActiveAccount, useMessageList } from '@root/src/shared/hooks/accounts';
 import messagesStorage from '@root/src/shared/storages/messageStorage';
+import messagesSessionStorage from '@root/src/shared/storages/messageSessionStorage';
 
 type Inputs = {
   message: string;
@@ -57,6 +58,7 @@ export default function MessageContent() {
 
     await chatApi.accountSendMessage(mf.to, mf.from, mf.message);
     messagesStorage.addMessage(storageKey, mf);
+    messagesSessionStorage.updateSession(mf.from, { to: mf.to });
     return;
   }, [activeAccount, chatApi, contact, getValues, setValue, storageKey]);
 
@@ -77,16 +79,18 @@ export default function MessageContent() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className=" zm-bg-card h-20 flex items-center px-4">
+      <div className=" zm-bg-card h-20 flex items-center px-4 flex-shrink-0">
         <div className="flex items-center">
-          <div className="h-8 w-8 rounded-full bg-[#1F1D1D]"></div>
+          <div className={' mx-2 my-2 px-2 py-2 bg-[#DADCE0] rounded-full'}>
+            <TicketIcon className="w-10 h-10 text-[#9AA0A6]" />
+          </div>
           <div className="mx-4">
             <div>{`${contact?.name}`}</div>
             <div>{`${contact?.address?.replace(' ', '').substring(0, 6)}`}</div>
           </div>
         </div>
       </div>
-      <div className="flex-grow overflow-scroll flex flex-col justify-end">
+      <div className="flex-grow overflow-hidden">
         <MessageList list={messageList} />
       </div>
       <div className="flex items-center mb-3 mx-3 gap-3">

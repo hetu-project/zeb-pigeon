@@ -1,6 +1,6 @@
 import { TicketIcon, ShareIcon, PaperAirplaneIcon, StarIcon, ChartBarSquareIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Button,
   Menu,
@@ -123,17 +123,30 @@ export interface MessageListProps {
 
 export default function MessageList({ list = [] }: MessageListProps) {
   const activeAccount = useActiveAccount();
+  const containerRef = useRef<HTMLDivElement>();
+  useEffect(() => {
+    if (list.length && containerRef.current) {
+      const height = containerRef.current.scrollHeight;
+      console.log('scrollHeight', height);
+      containerRef.current.scroll({
+        top: height,
+        // behavior: 'smooth',
+      });
+    }
+  }, [list.length]);
   return (
-    <div className="flex flex-col h-full overflow-hidden gap-3 justify-end py-4">
-      {list.map((item, index) => {
-        return (
-          <MessageCard
-            key={index}
-            position={activeAccount?.address !== item?.from ? 'left' : 'right'}
-            message={item?.message}
-          />
-        );
-      })}
+    <div className="overflow-scroll h-full" ref={containerRef}>
+      <div className="flex flex-col gap-3 py-4 justify-end">
+        {list.map((item, index) => {
+          return (
+            <MessageCard
+              key={index}
+              position={activeAccount?.address !== item?.from ? 'left' : 'right'}
+              message={item?.message}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }

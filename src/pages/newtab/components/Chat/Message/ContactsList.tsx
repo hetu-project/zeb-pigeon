@@ -2,6 +2,7 @@ import { TicketIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { useAllContacts } from '@root/src/shared/hooks/contacts';
 import contactsStorage from '@root/src/shared/storages/contactsStorage';
 import { useCallback } from 'react';
+import { Link } from 'react-router-dom';
 
 export interface ContactCardProps {
   name?: string;
@@ -12,7 +13,10 @@ export function ContactCard({ name, address }: ContactCardProps) {
     contactsStorage.remove(address);
   }, [address]);
   return (
-    <div className="flex items-center justify-between bg-black bg-opacity-50 rounded-xl">
+    <Link
+      to={`/chat/${address}`}
+      replace
+      className="flex items-center justify-between bg-black bg-opacity-50 rounded-xl">
       <div className="flex-grow flex items-center">
         <div className=" mx-2 my-2 px-2 py-2 bg-[#DADCE0] rounded-full">
           <TicketIcon className="w-6 h-6 text-[#9AA0A6]" />
@@ -24,7 +28,7 @@ export function ContactCard({ name, address }: ContactCardProps) {
       <div className="px-3">
         <XCircleIcon className="w-5 h-5 text-[#9AA0A6] cursor-pointer" onClick={handleRemove} />
       </div>
-    </div>
+    </Link>
   );
 }
 
