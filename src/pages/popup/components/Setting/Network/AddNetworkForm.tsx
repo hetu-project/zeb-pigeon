@@ -16,7 +16,7 @@ export default function AddNetworkForm() {
   const allNetwork = useNetworkList();
   const match = useMatch('/setting/network/edit/:name');
   const initParams = useCallback(() => {
-    if (match.params.name) {
+    if (match?.params?.name) {
       const config = allNetwork.find(network => {
         return network.name === match.params.name;
       });
@@ -24,7 +24,7 @@ export default function AddNetworkForm() {
       setValue('name', config.name);
       setValue('url', config.url);
     }
-  }, [allNetwork, match.params.name, setValue]);
+  }, [allNetwork, match?.params?.name, setValue]);
   useEffect(() => {
     initParams();
   }, [initParams]);

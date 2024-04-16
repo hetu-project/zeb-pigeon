@@ -4,8 +4,8 @@ import {
   ArrowLeftIcon,
   ArrowPathIcon,
   ArchiveBoxXMarkIcon,
-  DocumentIcon,
   PlusIcon,
+  CodeBracketIcon,
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@chakra-ui/react';
@@ -46,7 +46,7 @@ export const NetworkItem = ({ name, isActive }: NetworkItemProps) => {
         <div className="text-base">{name}</div>
       </div>
       <div className="flex gap-4">
-        <DocumentIcon className="w-5 h-5 cursor-pointer" onClick={handleEditNetwork} />
+        <CodeBracketIcon className="w-5 h-5 cursor-pointer" onClick={handleEditNetwork} />
         {isActive ? (
           <ArrowPathIcon className="w-5 h-5 zm-text-description cursor-not-allowed" />
         ) : (

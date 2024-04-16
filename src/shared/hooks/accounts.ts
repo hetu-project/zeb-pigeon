@@ -3,6 +3,7 @@ import accountStorage, { Account } from '../storages/accountStorage';
 import keystoreStorage from '../storages/keystoreStorage';
 import useStorage from './useStorage';
 import messagesStorage from '../storages/messageStorage';
+import { useSessionList } from './session';
 
 export const useActiveAccount = (): Account | undefined => {
   const mainAccount = useStorage(keystoreStorage);
@@ -23,4 +24,13 @@ export const useMessageList = (from: string, to: string) => {
     return allMessage[`${from}_${to}`] || [];
   }, [allMessage, from, to]);
   return list;
+};
+
+export const useMessageCount = () => {
+  const mainAccount = useStorage(keystoreStorage);
+  const allMessage = useSessionList(mainAccount);
+  const count = useMemo(() => {
+    return allMessage.length;
+  }, [allMessage.length]);
+  return count;
 };
