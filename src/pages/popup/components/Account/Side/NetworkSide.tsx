@@ -1,33 +1,66 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   UserIcon,
   ArrowLeftIcon,
   ArrowPathIcon,
   ArchiveBoxXMarkIcon,
-  DocumentIcon,
   PlusIcon,
+  CodeBracketIcon,
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@chakra-ui/react';
-export const NetworkItem = () => {
+import networkStorage from '@root/src/shared/storages/networkStorage';
+import { useActiveNetwork, useNetworkList } from '@root/src/shared/hooks/network';
+import activeNetworkStorage from '@root/src/shared/storages/activeNetworkStorage';
+
+export interface NetworkItemProps {
+  name?: string;
+  url?: string;
+  isActive?: boolean;
+}
+
+export const NetworkItem = ({ name, isActive }: NetworkItemProps) => {
+  const navigate = useNavigate();
+
+  const handleRemoveNetwork = useCallback(async () => {
+    if (!name) return;
+    await networkStorage.remove(name);
+  }, [name]);
+
+  const handleActiveNetwork = useCallback(async () => {
+    if (!name) return;
+    await activeNetworkStorage.add(name);
+  }, [name]);
+
+  const handleEditNetwork = useCallback(async () => {
+    if (!name) return;
+    navigate(`/setting/network/edit/${name}`);
+  }, [name, navigate]);
+
   return (
     <div className="flex items-center justify-between px-4 py-3 gap-4">
       <div>
         <UserIcon className="w-5 h-5" />
       </div>
       <div className="flex-grow">
-        <div className="text-base">{'Network'}</div>
+        <div className="text-base">{name}</div>
       </div>
       <div className="flex gap-4">
-        <DocumentIcon className="w-5 h-5" />
-        <ArrowPathIcon className="w-5 h-5" />
-        <ArchiveBoxXMarkIcon className="w-5 h-5" />
+        <CodeBracketIcon className="w-5 h-5 cursor-pointer" onClick={handleEditNetwork} />
+        {isActive ? (
+          <ArrowPathIcon className="w-5 h-5 zm-text-description cursor-not-allowed" />
+        ) : (
+          <ArrowPathIcon className="w-5 h-5 cursor-pointer" onClick={handleActiveNetwork} />
+        )}
+        <ArchiveBoxXMarkIcon className="w-5 h-5 cursor-pointer" onClick={handleRemoveNetwork} />
       </div>
     </div>
   );
 };
 export default function NetworkSide() {
   const navigate = useNavigate();
+  const networkList = useNetworkList();
+  const activeNetwork = useActiveNetwork();
   return (
     <div className="relative">
       <div className="flex items-center text-xl">
@@ -41,9 +74,16 @@ export default function NetworkSide() {
         <div>{'Network Manage'}</div>
       </div>
       <div className="flex flex-col gap-2 mt-10">
-        <NetworkItem />
-        <NetworkItem />
-        <NetworkItem />
+        {networkList.map(network => {
+          return (
+            <NetworkItem
+              key={network.name}
+              name={network.name}
+              url={network.url}
+              isActive={activeNetwork?.name === network.name}
+            />
+          );
+        })}
       </div>
       <div>
         <Button

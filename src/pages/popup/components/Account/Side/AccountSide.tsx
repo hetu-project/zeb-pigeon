@@ -4,7 +4,8 @@ import {
   ArrowLeftIcon,
   ArrowPathIcon,
   ArchiveBoxXMarkIcon,
-  DocumentIcon,
+  CodeBracketIcon,
+  ClipboardDocumentIcon,
   PlusIcon,
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +14,7 @@ import useStorage from '@src/shared/hooks/useStorage';
 import accountStorage from '@root/src/shared/storages/accountStorage';
 import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
 import { saveAs } from 'file-saver';
+import copy from 'copy-to-clipboard';
 
 interface AccountItemProps {
   address?: string;
@@ -30,10 +32,19 @@ export const AccountItem: FC<AccountItemProps> = ({ address, name, onActive, onE
       </div>
       <div className="flex-grow overflow-hidden">
         <div>{name}</div>
-        <div className="truncate">{address}</div>
+        <div className="flex items-center">
+          <div className="truncate">{address}</div>
+          <Button
+            className="px-1"
+            onClick={() => {
+              copy(address);
+            }}>
+            <ClipboardDocumentIcon className="w-3 h-3 cursor-pointer" onClick={onEdit} />
+          </Button>
+        </div>
       </div>
       <div className="flex gap-4">
-        <DocumentIcon className="w-5 h-5 cursor-pointer" onClick={onEdit} />
+        <CodeBracketIcon className="w-5 h-5 cursor-pointer" onClick={onEdit} />
         <ArrowPathIcon className="w-5 h-5 cursor-pointer" onClick={onActive} />
         <ArchiveBoxXMarkIcon className="w-5 h-5 cursor-pointer" onClick={onDelete} />
       </div>

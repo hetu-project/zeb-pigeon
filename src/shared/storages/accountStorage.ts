@@ -1,5 +1,5 @@
 import { BaseStorage, createStorage, StorageType } from '@src/shared/storages/base';
-interface Account {
+export interface Account {
   name: string;
   address: string;
   mnemonic?: string;
@@ -7,7 +7,7 @@ interface Account {
   publicKey?: string;
 }
 
-interface AccountFileJson {
+export interface AccountFileJson {
   version: string;
   accounts: Account[];
 }
