@@ -62,6 +62,15 @@ const router = createHashRouter([
             path: 'add',
             element: <AddNetworkForm />,
           },
+          {
+            path: 'edit',
+            children: [
+              {
+                path: ':name',
+                element: <AddNetworkForm />,
+              },
+            ],
+          },
         ],
       },
     ],

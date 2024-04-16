@@ -1,22 +1,43 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useMatch } from 'react-router-dom';
 import { Button } from '@chakra-ui/react';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import networkStorage from '@root/src/shared/storages/networkStorage';
+import { useNetworkList } from '@root/src/shared/hooks/network';
 
 type Inputs = {
   name: string;
   url: string;
 };
 export default function AddNetworkForm() {
-  const { control, register } = useForm<Inputs>();
-
-  const networkValue = useWatch({
-    control,
-    name: ['name', 'url'],
-  });
-
+  const { register, getValues, setValue } = useForm<Inputs>();
   const navigate = useNavigate();
+  const allNetwork = useNetworkList();
+  const match = useMatch('/setting/network/edit/:name');
+  const initParams = useCallback(() => {
+    if (match.params.name) {
+      const config = allNetwork.find(network => {
+        return network.name === match.params.name;
+      });
+      if (!config) return;
+      setValue('name', config.name);
+      setValue('url', config.url);
+    }
+  }, [allNetwork, match.params.name, setValue]);
+  useEffect(() => {
+    initParams();
+  }, [initParams]);
+  const handleAddNetwork = useCallback(async () => {
+    const name = getValues('name');
+    const url = getValues('url');
+    if (!name || !url) return;
+    await networkStorage.add(name, {
+      name,
+      url,
+    });
+    navigate(-1);
+  }, [getValues, navigate]);
   return (
     <div className="relative">
       <div className="flex items-center text-xl">
@@ -27,7 +48,7 @@ export default function AddNetworkForm() {
           }}>
           <ArrowLeftIcon className="w-5 h-5" />
         </button>
-        <div>{'Add Network'}</div>
+        <div>{match ? 'Edit Network' : 'Add Network'}</div>
       </div>
       <div className="flex flex-col gap-4 mt-10 px-2">
         <div className="">
@@ -47,12 +68,7 @@ export default function AddNetworkForm() {
           }}>
           Cancel
         </Button>
-        <Button
-          className=" zm-bg-card rounded-3xl font-medium px-6 py-3 w-28"
-          onClick={() => {
-            console.log(networkValue);
-            navigate(-1);
-          }}>
+        <Button className=" zm-bg-card rounded-3xl font-medium px-6 py-3 w-28" onClick={handleAddNetwork}>
           Save
         </Button>
       </div>

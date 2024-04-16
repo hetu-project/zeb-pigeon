@@ -2,6 +2,7 @@ import React, { ReactNode, FC, createContext, useMemo, useState, useEffect } fro
 import ChatApi from '../client/ChatApi';
 import WsProvider from '../client/provider/WsProvider';
 import { useActiveAccount } from '../hooks/accounts';
+import { useActiveNetwork } from '../hooks/network';
 export interface ChatApiContextProps {
   api?: ChatApi;
   setEndpoints?: (endpoints: string | string[]) => void;
@@ -15,7 +16,11 @@ interface ChatApiProviderProps {
 }
 const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
   const [api, setApi] = useState<ChatApi | undefined>();
-  const [endpoints, setEndpoints] = useState<string | string[]>('ws://52.221.181.98:8080');
+  const activeNetwork = useActiveNetwork();
+  const endpoints = useMemo(() => {
+    return activeNetwork?.url;
+  }, [activeNetwork?.url]);
+  // const [endpoints, setEndpoints] = useState<string | string[]>('ws://52.221.181.98:8080');
 
   const activeAccount = useActiveAccount();
 
@@ -32,7 +37,7 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
   const value = useMemo(() => {
     return {
       api,
-      setEndpoints,
+      // setEndpoints,
     };
   }, [api]);
 
