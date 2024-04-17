@@ -1,4 +1,4 @@
-import { ProviderInterface } from './provider';
+import { ProviderInterfaceCallback } from './provider';
 import WsProvider from './provider/WsProvider';
 
 export interface JsonRpcObject {
@@ -47,7 +47,7 @@ export interface ChatApiOptions {
 }
 export default class ChatApi {
   private isReadyPromise: Promise<ChatApi>;
-  provider: ProviderInterface;
+  provider: WsProvider;
   private mid = 0;
   constructor(options?: ChatApiOptions) {
     this.provider = options.provider;
@@ -91,6 +91,7 @@ export default class ChatApi {
       address: from,
       sign: '',
     });
+    this.provider.send<number>('chain_getBlockHash', [0]);
   }
 
   public async accountPullMessage() {
@@ -101,12 +102,7 @@ export default class ChatApi {
       },
     ]);
   }
-  public async accountSubscribeMessage() {
-    this.provider.send<number>('account_receiveMessage', [
-      {
-        address: '',
-        sign: '',
-      },
-    ]);
+  public async accountSubscribeMessage(cb: ProviderInterfaceCallback) {
+    this.provider.addEventListener('', 'account_receiveMessage', {}, cb);
   }
 }

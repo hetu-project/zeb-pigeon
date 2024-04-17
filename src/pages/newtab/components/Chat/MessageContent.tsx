@@ -90,7 +90,7 @@ export default function MessageContent() {
           </div>
         </div>
       </div>
-      <div className="flex-grow overflow-hidden">
+      <div className="flex-grow overflow-hidden flex flex-col justify-end">
         <MessageList list={messageList} />
       </div>
       <div className="flex items-center mb-3 mx-3 gap-3">

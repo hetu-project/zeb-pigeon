@@ -1,8 +1,9 @@
-import React, { ReactNode, FC, createContext, useMemo, useState, useEffect } from 'react';
+import React, { ReactNode, FC, createContext, useMemo, useState, useEffect , useCallback } from 'react';
 import ChatApi from '../client/ChatApi';
 import WsProvider from '../client/provider/WsProvider';
 import { useActiveAccount } from '../hooks/accounts';
 import { useActiveNetwork } from '../hooks/network';
+import messagesStorage from '../storages/messageStorage';
 export interface ChatApiContextProps {
   api?: ChatApi;
   setEndpoints?: (endpoints: string | string[]) => void;
@@ -54,6 +55,27 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
     }
     return () => {};
   }, [activeAccount?.address, api]);
+  const handleReceiveMessage = useCallback(
+    async (message: unknown) => {
+      if (!activeAccount) return;
+      console.log('handleReceiveMessage', message);
+      const from = activeAccount?.address;
+      const to = '02944ffd4c3be04908d962fa3622b776e167933149ebca1aeed905455640a8a2bc';
+      const key = `${from}_${to}`;
+      await messagesStorage.addMessage(key, {
+        from: '02944ffd4c3be04908d962fa3622b776e167933149ebca1aeed905455640a8a2bc',
+        to: activeAccount?.address,
+        message: message as string,
+        sign: '',
+      });
+    },
+    [activeAccount],
+  );
+  useEffect(() => {
+    if (!api) return;
+    if (!activeAccount?.address) return;
+    api.accountSubscribeMessage(handleReceiveMessage);
+  }, [activeAccount?.address, api, handleReceiveMessage]);
   return <ChatApiContext.Provider value={value}>{children}</ChatApiContext.Provider>;
 };
 

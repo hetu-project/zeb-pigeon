@@ -20,8 +20,11 @@ const networkStorage: NetworkListStorage = {
   ...storage,
   add: async (name, value) => {
     const networksList = await storage.get();
-    networksList.push(value);
-    await storage.set(networksList);
+    const newList = networksList.filter(item => {
+      return item.name !== value.name;
+    });
+    newList.push(value);
+    await storage.set(newList);
     return true;
   },
   remove: async name => {

@@ -30,6 +30,7 @@ export const useMessageCount = () => {
   const mainAccount = useStorage(keystoreStorage);
   const allMessage = useSessionList(mainAccount);
   const count = useMemo(() => {
+    return 0;
     return allMessage.length;
   }, [allMessage.length]);
   return count;
