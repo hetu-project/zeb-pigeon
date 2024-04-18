@@ -44,6 +44,7 @@ export default function Guide() {
       return;
     }
     const hdKey = Mnemonic.generateHdKeyFromMnemonic(mnemonic);
+    // const hdKey = Mnemonic.generateEd25519FromMnemonic(mnemonic);
     const address = etc.bytesToHex(hdKey.publicKey);
     keystoreStorage.add(address);
     accountStorage.add(address, {
