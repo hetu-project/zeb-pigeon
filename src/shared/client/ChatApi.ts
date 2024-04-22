@@ -85,6 +85,8 @@ export default class ChatApi {
   }
 
   public async accountSendMessage(from: string, to: string, message: string) {
+    // eslint-disable-next-line
+    // @ts-ignore
     const messageCreated = framework.Zmessage.create({
       version: 0,
       type: 1,
@@ -94,6 +96,9 @@ export default class ChatApi {
       to: to,
       id: message,
     });
+
+    // eslint-disable-next-line
+    // @ts-ignore
     const buffer = framework.Zmessage.encode(messageCreated).finish();
     // const decoded = framework.Zmessage.decode(buffer);
     this.provider.send<number>('account_sendMessage', {
