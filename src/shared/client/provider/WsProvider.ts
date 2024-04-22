@@ -1,6 +1,7 @@
 import { ProviderInterface, ProviderInterfaceCallback, ProviderInterfaceEmitCb, ProviderInterfaceEmitted } from '.';
 import { JsonRpcRequest, JsonRpcResponse } from '../ChatApi';
 import { EventEmitter } from 'eventemitter3';
+// import { framework } from '@root/src/proto/zmessage';
 
 interface SubscriptionHandler {
   callback: ProviderInterfaceCallback;
@@ -38,6 +39,9 @@ export default class WsProvider implements ProviderInterface {
   }
 
   private onSocketMessageResult = (response: JsonRpcResponse<string>): void => {
+    // const buffer = response.result;
+    // const decoded = framework.Zmessage.decode(buffer);
+
     this.eventemitter.emit('account_receiveMessage', response.result);
 
     const handler = this.handlers[response.id];

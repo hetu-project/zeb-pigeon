@@ -1,5 +1,6 @@
 import { ProviderInterfaceCallback } from './provider';
 import WsProvider from './provider/WsProvider';
+import { framework } from '@src/proto/zmessage';
 
 export interface JsonRpcObject {
   id: number;
@@ -84,10 +85,21 @@ export default class ChatApi {
   }
 
   public async accountSendMessage(from: string, to: string, message: string) {
+    const messageCreated = framework.Zmessage.create({
+      version: 0,
+      type: 1,
+      pubkey: from,
+      data: message,
+      sig: from,
+      to: to,
+      id: message,
+    });
+    const buffer = framework.Zmessage.encode(messageCreated).finish();
+    // const decoded = framework.Zmessage.decode(buffer);
     this.provider.send<number>('account_sendMessage', {
       from,
       to,
-      message,
+      message: buffer,
       address: from,
       sign: '',
     });
