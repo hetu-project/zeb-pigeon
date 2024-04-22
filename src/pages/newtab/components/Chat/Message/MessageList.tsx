@@ -15,9 +15,10 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import CausalityGraphsSvg from '@assets/img/chat/CausalityGraphs.svg';
+// import CausalityGraphsSvg from '@assets/img/chat/CausalityGraphs.svg';
 import { useActiveAccount } from '@root/src/shared/hooks/accounts';
 import { MessageItem } from '@root/src/shared/storages/messageStorage';
+import MessageGraph from './MessageGraph';
 export interface MessageCardProps {
   position: 'left' | 'right';
   message: string;
@@ -92,8 +93,9 @@ export function MessageCard({ position = 'left', message }: MessageCardProps) {
           }}>
           <ModalHeader className="text-white font-bold text-base">{'Causality Graphs'}</ModalHeader>
           <ModalBody className="">
-            <div>
-              <img className="w-[738px] h-[646px] object-contain" src={CausalityGraphsSvg} alt="" />
+            <div className="flex items-center justify-center">
+              {/* <img className="w-[738px] h-[646px] object-contain" src={CausalityGraphsSvg} alt="" /> */}
+              <MessageGraph />
             </div>
           </ModalBody>
           <ModalFooter>
@@ -135,7 +137,7 @@ export default function MessageList({ list = [] }: MessageListProps) {
     }
   }, [list.length]);
   return (
-    <div className="overflow-scroll h-full" ref={containerRef}>
+    <div className="overflow-scroll max-h-full" ref={containerRef}>
       <div className="flex flex-col gap-3 py-4 justify-end">
         {list.map((item, index) => {
           return (

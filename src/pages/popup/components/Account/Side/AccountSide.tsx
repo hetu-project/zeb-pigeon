@@ -67,9 +67,13 @@ export default function AccountSide() {
     },
     [navigate],
   );
-  const handleEdit = useCallback((account: string) => {
-    console.log('edit', account);
-  }, []);
+  const handleEdit = useCallback(
+    (account: string) => {
+      if (!account) return;
+      navigate(`/setting/account/edit/${account}`);
+    },
+    [navigate],
+  );
   const handleDelete = useCallback(
     async (account: string) => {
       if (account && account === keystoreSeeds) {
@@ -116,7 +120,7 @@ export default function AccountSide() {
           className=" zm-bg-card rounded-3xl font-medium px-6 py-3 w-full mt-7"
           leftIcon={<PlusIcon className="h-4 w-4" />}
           onClick={() => {
-            navigate('/guide');
+            navigate('/setting/account/add');
           }}>
           Add Account
         </Button>

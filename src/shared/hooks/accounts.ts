@@ -18,6 +18,17 @@ export const useActiveAccount = (): Account | undefined => {
   return activeAccount;
 };
 
+export const useAccountFromAddress = (address: string): Account | undefined => {
+  const allAccount = useStorage(accountStorage);
+
+  const account: Account | undefined = useMemo(() => {
+    if (!allAccount[address]) return undefined;
+    return allAccount[address];
+  }, [allAccount, address]);
+
+  return account;
+};
+
 export const useMessageList = (from: string, to: string) => {
   const allMessage = useStorage(messagesStorage);
   const list = useMemo(() => {
@@ -30,6 +41,7 @@ export const useMessageCount = () => {
   const mainAccount = useStorage(keystoreStorage);
   const allMessage = useSessionList(mainAccount);
   const count = useMemo(() => {
+    return 0;
     return allMessage.length;
   }, [allMessage.length]);
   return count;

@@ -1,6 +1,7 @@
 import { ProviderInterface, ProviderInterfaceCallback, ProviderInterfaceEmitCb, ProviderInterfaceEmitted } from '.';
 import { JsonRpcRequest, JsonRpcResponse } from '../ChatApi';
 import { EventEmitter } from 'eventemitter3';
+// import { framework } from '@root/src/proto/zmessage';
 
 interface SubscriptionHandler {
   callback: ProviderInterfaceCallback;
@@ -38,6 +39,11 @@ export default class WsProvider implements ProviderInterface {
   }
 
   private onSocketMessageResult = (response: JsonRpcResponse<string>): void => {
+    // const buffer = response.result;
+    // const decoded = framework.Zmessage.decode(buffer);
+
+    this.eventemitter.emit('account_receiveMessage', response.result);
+
     const handler = this.handlers[response.id];
 
     if (!handler) {
@@ -116,6 +122,7 @@ export default class WsProvider implements ProviderInterface {
     // this.#stats.total.bytesRecv += bytesRecv;
 
     const response = JSON.parse(message.data) as JsonRpcResponse<string>;
+    console.log('onSocketMessage', message);
 
     return response.method === undefined ? this.onSocketMessageResult(response) : this.onSocketMessageResult(response);
   };
@@ -152,5 +159,9 @@ export default class WsProvider implements ProviderInterface {
       return Promise.resolve(true);
     }
     return Promise.resolve(false);
+  }
+  addEventListener(type: string, method: string, params: unknown, cb: ProviderInterfaceCallback) {
+    this.eventemitter.addListener(method, cb);
+    console.log('type', method, params, cb);
   }
 }

@@ -1,0 +1,12 @@
+package framework;
+syntax = "proto3";
+
+message Zmessage {
+  uint32 version = 0;
+  uint32 type = 1;
+  string pubkey = 2;
+  string data = 3;
+  string sig = 4;
+  string to = 5;
+  string id = 6;
+}

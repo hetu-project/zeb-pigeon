@@ -3,11 +3,11 @@ import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
 import accountStorage from '@root/src/shared/storages/accountStorage';
 
 import React, { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 import { useForm, useWatch } from 'react-hook-form';
 import bip39 from 'bip39';
 import { Button } from '@chakra-ui/react';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, PlusIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { Mnemonic } from '@src/shared/crypto/mnemonic';
 import { etc } from '@noble/ed25519';
@@ -44,6 +44,7 @@ export default function Guide() {
       return;
     }
     const hdKey = Mnemonic.generateHdKeyFromMnemonic(mnemonic);
+    // const hdKey = Mnemonic.generateEd25519FromMnemonic(mnemonic);
     const address = etc.bytesToHex(hdKey.publicKey);
     keystoreStorage.add(address);
     accountStorage.add(address, {
@@ -114,8 +115,26 @@ export default function Guide() {
   );
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
+  const match = useMatch('/setting/account/add');
+  const showBack = useMemo(() => {
+    return !!match;
+  }, [match]);
+
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4 relative">
+      {showBack ? (
+        <div className="flex items-center text-xl w-full absolute">
+          <button
+            className="w-12 h-12 flex items-center justify-center"
+            onClick={() => {
+              navigate(-1);
+            }}>
+            <ArrowLeftIcon className="w-5 h-5" />
+          </button>
+        </div>
+      ) : (
+        <></>
+      )}
       <div className="w-full flex px-4">
         <input
           placeholder="Account name"

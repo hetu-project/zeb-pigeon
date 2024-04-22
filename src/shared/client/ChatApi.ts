@@ -1,5 +1,6 @@
-import { ProviderInterface } from './provider';
+import { ProviderInterfaceCallback } from './provider';
 import WsProvider from './provider/WsProvider';
+import { framework } from '@src/proto/zmessage';
 
 export interface JsonRpcObject {
   id: number;
@@ -47,7 +48,7 @@ export interface ChatApiOptions {
 }
 export default class ChatApi {
   private isReadyPromise: Promise<ChatApi>;
-  provider: ProviderInterface;
+  provider: WsProvider;
   private mid = 0;
   constructor(options?: ChatApiOptions) {
     this.provider = options.provider;
@@ -84,13 +85,30 @@ export default class ChatApi {
   }
 
   public async accountSendMessage(from: string, to: string, message: string) {
+    // eslint-disable-next-line
+    // @ts-ignore
+    const messageCreated = framework.Zmessage.create({
+      version: 0,
+      type: 1,
+      pubkey: from,
+      data: message,
+      sig: from,
+      to: to,
+      id: message,
+    });
+
+    // eslint-disable-next-line
+    // @ts-ignore
+    const buffer = framework.Zmessage.encode(messageCreated).finish();
+    // const decoded = framework.Zmessage.decode(buffer);
     this.provider.send<number>('account_sendMessage', {
       from,
       to,
-      message,
+      message: buffer,
       address: from,
       sign: '',
     });
+    this.provider.send<number>('chain_getBlockHash', [0]);
   }
 
   public async accountPullMessage() {
@@ -101,12 +119,7 @@ export default class ChatApi {
       },
     ]);
   }
-  public async accountSubscribeMessage() {
-    this.provider.send<number>('account_receiveMessage', [
-      {
-        address: '',
-        sign: '',
-      },
-    ]);
+  public async accountSubscribeMessage(cb: ProviderInterfaceCallback) {
+    this.provider.addEventListener('', 'account_receiveMessage', {}, cb);
   }
 }
