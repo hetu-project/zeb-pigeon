@@ -17,6 +17,7 @@ type AccountsMap = Record<string, Account>;
 type AccountsMapStorage = BaseStorage<AccountsMap> & {
   add: (address: string, value: Account) => Promise<boolean>;
   remove: (address: string) => Promise<boolean>;
+  update: (address: string, value: Account) => Promise<boolean>;
   exportAccounts: (account?: string[]) => Promise<AccountFileJson>;
   importAccounts: (json: AccountFileJson) => Promise<boolean>;
 };
@@ -35,6 +36,26 @@ const accountStorage: AccountsMapStorage = {
   add: async (address, account) => {
     const accountsMap = await storage.get();
     accountsMap[address] = account;
+    await storage.set(accountsMap);
+
+    // await storage.set((accountsMap) => {
+    //   accountsMap[address] = account;
+    //   return accountsMap;
+    // });
+
+    return true;
+  },
+  update: async (address, account) => {
+    const accountsMap = await storage.get();
+    const oldAccount = accountsMap[address];
+    let newAccount = account;
+    if (oldAccount) {
+      newAccount = {
+        ...oldAccount,
+        ...account,
+      };
+    }
+    accountsMap[address] = newAccount;
     await storage.set(accountsMap);
 
     // await storage.set((accountsMap) => {
