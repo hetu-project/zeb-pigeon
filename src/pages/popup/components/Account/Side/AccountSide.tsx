@@ -9,7 +9,7 @@ import {
   PlusIcon,
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@chakra-ui/react';
+import { Button, useToast } from '@chakra-ui/react';
 import useStorage from '@src/shared/hooks/useStorage';
 import accountStorage from '@root/src/shared/storages/accountStorage';
 import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
@@ -25,6 +25,7 @@ interface AccountItemProps {
 }
 
 export const AccountItem: FC<AccountItemProps> = ({ address, name, onActive, onEdit, onDelete }) => {
+  const toast = useToast();
   return (
     <div className="flex items-center justify-between px-4 py-3 gap-4">
       <div>
@@ -34,13 +35,19 @@ export const AccountItem: FC<AccountItemProps> = ({ address, name, onActive, onE
         <div>{name}</div>
         <div className="flex items-center">
           <div className="truncate">{address}</div>
-          <Button
+          <button
             className="px-1"
             onClick={() => {
               copy(address);
+              toast({
+                title: 'Copy Success',
+                status: 'success',
+                duration: 19000,
+                isClosable: true,
+              });
             }}>
-            <ClipboardDocumentIcon className="w-3 h-3 cursor-pointer" onClick={onEdit} />
-          </Button>
+            <ClipboardDocumentIcon className="w-3 h-3 cursor-pointer" />
+          </button>
         </div>
       </div>
       <div className="flex gap-4">

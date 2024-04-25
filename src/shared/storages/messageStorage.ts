@@ -26,7 +26,7 @@ const messagesStorage: ContactsMapStorage = {
   ...storage,
   addMessage: async (address, value) => {
     const contactsMap = await storage.get();
-    console.log('addMessage', address, value);
+    // console.log('addMessage', address, value);
     contactsMap[address] = contactsMap[address] || [];
     contactsMap[address].push(value);
     await storage.set(contactsMap);

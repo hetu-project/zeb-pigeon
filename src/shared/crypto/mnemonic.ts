@@ -73,12 +73,12 @@ export class Mnemonic {
 
   static generateEd25519FromMnemonic(
     mnemonic: string,
-    path: string = `m/44'/60'/0'/0/0`,
+    path: string = `m/0/1'/1'`,
     password: string = '',
   ): Ed25519HDKey {
     const seed = bip39.mnemonicToSeedSync(mnemonic, password);
     const masterSeed = Ed25519HDKey.fromMasterSeed(seed);
-    const hd = masterSeed.derive(path);
+    const hd = masterSeed.derive(path, true);
     return hd;
   }
   // static generateMasterSeedFromMnemonic(

@@ -1,3 +1,4 @@
+import { ZMessage } from '@root/src/proto/zmessage';
 import { ProviderInterface, ProviderInterfaceCallback, ProviderInterfaceEmitCb, ProviderInterfaceEmitted } from '.';
 import { JsonRpcRequest, JsonRpcResponse } from '../ChatApi';
 import { EventEmitter } from 'eventemitter3';
@@ -113,18 +114,17 @@ export default class WsProvider implements ProviderInterface {
     // }
   };
 
-  private onSocketMessage = (message: MessageEvent<string>): void => {
-    // l.debug(() => ['received', message.data]);
+  private onSocketMessage = (message: MessageEvent<Blob>): void => {
+    message.data.arrayBuffer().then(buffer => {
+      const decoded = ZMessage.decode(new Uint8Array(buffer));
 
-    // const bytesRecv = message.data.length;
+      this.eventemitter.emit('account_receiveMessage', decoded);
+    });
 
-    // this.#endpointStats.bytesRecv += bytesRecv;
-    // this.#stats.total.bytesRecv += bytesRecv;
+    // const response = JSON.parse(message.data) as JsonRpcResponse<string>;
+    // console.log('onSocketMessage', message);
 
-    const response = JSON.parse(message.data) as JsonRpcResponse<string>;
-    console.log('onSocketMessage', message);
-
-    return response.method === undefined ? this.onSocketMessageResult(response) : this.onSocketMessageResult(response);
+    // return response.method === undefined ? this.onSocketMessageResult(response) : this.onSocketMessageResult(response);
   };
   on(type: ProviderInterfaceEmitted, sub: ProviderInterfaceEmitCb): () => void {
     this.eventemitter.on(type, sub);
@@ -163,5 +163,8 @@ export default class WsProvider implements ProviderInterface {
   addEventListener(type: string, method: string, params: unknown, cb: ProviderInterfaceCallback) {
     this.eventemitter.addListener(method, cb);
     console.log('type', method, params, cb);
+  }
+  sendMessage(message: Uint8Array) {
+    this.websocket.send(message);
   }
 }

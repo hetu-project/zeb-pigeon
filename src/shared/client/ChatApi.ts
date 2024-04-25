@@ -1,6 +1,9 @@
+import { ChatMessage, ChatType } from '@root/src/proto/ChatMessage';
 import { ProviderInterfaceCallback } from './provider';
 import WsProvider from './provider/WsProvider';
-import { framework } from '@src/proto/zmessage';
+import { ZMessage, ZType } from '@src/proto/zmessage';
+import { stringToU8a, u8aToU8a } from '@src/shared/utils';
+import { blake2s } from '@noble/hashes/blake2s';
 
 export interface JsonRpcObject {
   id: number;
@@ -84,31 +87,34 @@ export default class ChatApi {
     ]);
   }
 
-  public async accountSendMessage(from: string, to: string, message: string) {
-    // eslint-disable-next-line
-    // @ts-ignore
-    const messageCreated = framework.Zmessage.create({
+  public async accountSendMessage(from: string, to: string, message: string, signature?: Uint8Array) {
+    const chatMessage = ChatMessage.create({
+      id: blake2s(stringToU8a(message + new Date().getMilliseconds())),
       version: 0,
-      type: 1,
-      pubkey: from,
-      data: message,
-      sig: from,
-      to: to,
-      id: message,
+      type: ChatType.CHAT_TYPE_MESSAGE,
+      publicKey: u8aToU8a(from),
+      data: stringToU8a(message),
+      signature: u8aToU8a(message),
+      from: u8aToU8a(from),
+      to: u8aToU8a(to),
     });
+    const chatBuffer = ChatMessage.encode(chatMessage).finish();
+    const hashId = blake2s(chatBuffer);
+    const messageCreated = ZMessage.create({
+      id: hashId,
+      version: 0,
+      type: ZType.Z_TYPE_RNG,
+      publicKey: u8aToU8a(from),
+      data: chatBuffer,
+      signature: signature,
+      from: u8aToU8a(from),
+      to: u8aToU8a(to),
+    });
+    const buffer = ZMessage.encode(messageCreated).finish();
 
-    // eslint-disable-next-line
-    // @ts-ignore
-    const buffer = framework.Zmessage.encode(messageCreated).finish();
-    // const decoded = framework.Zmessage.decode(buffer);
-    this.provider.send<number>('account_sendMessage', {
-      from,
-      to,
-      message: buffer,
-      address: from,
-      sign: '',
-    });
-    this.provider.send<number>('chain_getBlockHash', [0]);
+    console.log('messageCreated', messageCreated);
+
+    this.provider.sendMessage(buffer);
   }
 
   public async accountPullMessage() {

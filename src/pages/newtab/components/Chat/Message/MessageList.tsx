@@ -100,11 +100,11 @@ export function MessageCard({ position = 'left', message }: MessageCardProps) {
           </ModalBody>
           <ModalFooter>
             <div className="flex items-center justify-center gap-4 text-white font-semibold text-sm">
-              <Button
+              <button
                 className=" border border-[#605E5C] py-1 w-28 items-center justify-center rounded-sm"
                 onClick={() => setShowGraphs(false)}>
                 Close
-              </Button>
+              </button>
               <Button
                 className="w-28 flex items-center justify-center py-1 bg-[#4F52B2] rounded-sm border border-[#4F52B2]"
                 onClick={() => setShowGraphs(false)}>

@@ -44,6 +44,9 @@ dependencies:
   '@noble/hashes':
     specifier: ^1.4.0
     version: 1.4.0
+  '@polkadot/util':
+    specifier: ^12.6.2
+    version: 12.6.2
   '@reduxjs/toolkit':
     specifier: ^2.2.3
     version: 2.2.3(react-redux@9.1.0)(react@18.2.0)
@@ -86,6 +89,9 @@ dependencies:
   file-saver:
     specifier: ^2.0.5
     version: 2.0.5
+  long:
+    specifier: ^5.2.3
+    version: 5.2.3
   postcss:
     specifier: ^8.4.38
     version: 8.4.38
@@ -122,6 +128,9 @@ dependencies:
   tiny-secp256k1:
     specifier: ^2.2.3
     version: 2.2.3
+  ts-proto:
+    specifier: ^1.172.0
+    version: 1.172.0
   vite-plugin-node-polyfills:
     specifier: ^0.21.0
     version: 0.21.0(rollup@4.3.0)(vite@5.0.12)
@@ -2823,6 +2832,50 @@ packages:
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
     dev: true
 
+  /@polkadot/util@12.6.2:
+    resolution: {integrity: sha512-l8TubR7CLEY47240uki0TQzFvtnxFIO7uI/0GoWzpYD/O62EIAMRsuY01N4DuwgKq2ZWD59WhzsLYmA5K6ksdw==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@polkadot/x-bigint': 12.6.2
+      '@polkadot/x-global': 12.6.2
+      '@polkadot/x-textdecoder': 12.6.2
+      '@polkadot/x-textencoder': 12.6.2
+      '@types/bn.js': 5.1.5
+      bn.js: 5.2.1
+      tslib: 2.6.2
+    dev: false
+
+  /@polkadot/x-bigint@12.6.2:
+    resolution: {integrity: sha512-HSIk60uFPX4GOFZSnIF7VYJz7WZA7tpFJsne7SzxOooRwMTWEtw3fUpFy5cYYOeLh17/kHH1Y7SVcuxzVLc74Q==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@polkadot/x-global': 12.6.2
+      tslib: 2.6.2
+    dev: false
+
+  /@polkadot/x-global@12.6.2:
+    resolution: {integrity: sha512-a8d6m+PW98jmsYDtAWp88qS4dl8DyqUBsd0S+WgyfSMtpEXu6v9nXDgPZgwF5xdDvXhm+P0ZfVkVTnIGrScb5g==}
+    engines: {node: '>=18'}
+    dependencies:
+      tslib: 2.6.2
+    dev: false
+
+  /@polkadot/x-textdecoder@12.6.2:
+    resolution: {integrity: sha512-M1Bir7tYvNappfpFWXOJcnxUhBUFWkUFIdJSyH0zs5LmFtFdbKAeiDXxSp2Swp5ddOZdZgPac294/o2TnQKN1w==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@polkadot/x-global': 12.6.2
+      tslib: 2.6.2
+    dev: false
+
+  /@polkadot/x-textencoder@12.6.2:
+    resolution: {integrity: sha512-4N+3UVCpI489tUJ6cv3uf0PjOHvgGp9Dl+SZRLgFGt9mvxnvpW/7+XBADRMtlG4xi5gaRK7bgl5bmY6OMDsNdw==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@polkadot/x-global': 12.6.2
+      tslib: 2.6.2
+    dev: false
+
   /@popperjs/core@2.11.8:
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
     dev: false
@@ -3171,6 +3224,12 @@ packages:
     dependencies:
       '@babel/types': 7.23.3
     dev: true
+
+  /@types/bn.js@5.1.5:
+    resolution: {integrity: sha512-V46N0zwKRF5Q00AZ6hWtN0T8gGmDUaUzLWQvHFo5yThtVwK/VCenFY3wXVbOvNfajEpsTfQM4IN9k/d6gUVX3A==}
+    dependencies:
+      '@types/node': 20.8.10
+    dev: false
 
   /@types/chrome@0.0.263:
     resolution: {integrity: sha512-As0vzv99ov3M6ZR7R6VzhMWFZXkPMrFrCEXXVrMN576Cm70fTkj7Df2CF+qEo170JepX50pd11cX6O4DSAtl2Q==}
@@ -4292,6 +4351,11 @@ packages:
   /caniuse-lite@1.0.30001603:
     resolution: {integrity: sha512-iL2iSS0eDILMb9n5yKQoTBim9jMZ0Yrk8g0N9K7UzYyWnfIKzXBZD5ngpM37ZcL/cv0Mli8XtVMRYMQAfFpi5Q==}
 
+  /case-anything@2.1.13:
+    resolution: {integrity: sha512-zlOQ80VrQ2Ue+ymH5OuM/DlDq64mEm+B9UTdHULv5osUMD6HalNTblf2b1u/m6QecjsnOkBpqVZ+XPwIVsy7Ng==}
+    engines: {node: '>=12.13'}
+    dev: false
+
   /catharsis@0.9.0:
     resolution: {integrity: sha512-prMTQVpcns/tzFgFVkVp6ak6RykZyWb3gu8ckUpd6YkTlacOd3DXGJjIpD4Q6zJirizvaiAjSSHlOsA+6sNh2A==}
     engines: {node: '>= 10'}
@@ -4992,6 +5056,12 @@ packages:
     resolution: {integrity: sha512-53rsFbGdwMwlF7qvCt0ypLM5V5/Mbl0szB7GPN8y9NCcbknYOeVVXdrXEq+90IwAfrrzt6Hd+u2E2ntakICU8w==}
     dev: false
 
+  /detect-libc@1.0.3:
+    resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}
+    engines: {node: '>=0.10'}
+    hasBin: true
+    dev: false
+
   /detect-node-es@1.1.0:
     resolution: {integrity: sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==}
     dev: false
@@ -5060,6 +5130,12 @@ packages:
     dependencies:
       is-obj: 2.0.0
     dev: true
+
+  /dprint-node@1.0.8:
+    resolution: {integrity: sha512-iVKnUtYfGrYcW1ZAlfR/F59cUVL8QIhWoBJoSjkkdua/dkWIgjZfiLMeTjiB06X0ZLkQ0M2C1VbUj/CxkIf1zg==}
+    dependencies:
+      detect-libc: 1.0.3
+    dev: false
 
   /eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -9345,6 +9421,29 @@ packages:
       typescript: 5.2.2
       webpack: 5.89.0
     dev: true
+
+  /ts-poet@6.9.0:
+    resolution: {integrity: sha512-roe6W6MeZmCjRmppyfOURklO5tQFQ6Sg7swURKkwYJvV7dbGCrK28um5+51iW3twdPRKtwarqFAVMU6G1mvnuQ==}
+    dependencies:
+      dprint-node: 1.0.8
+    dev: false
+
+  /ts-proto-descriptors@1.15.0:
+    resolution: {integrity: sha512-TYyJ7+H+7Jsqawdv+mfsEpZPTIj9siDHS6EMCzG/z3b/PZiphsX+mWtqFfFVe5/N0Th6V3elK9lQqjnrgTOfrg==}
+    dependencies:
+      long: 5.2.3
+      protobufjs: 7.2.6
+    dev: false
+
+  /ts-proto@1.172.0:
+    resolution: {integrity: sha512-+4myxp5H+qD4r3sQUwvewN3zpdKpApeuUI0+lxfdznvkd2TUFVaeOD0q6dHszEYKTzR7DHu96Z1pqpNSOXF8iQ==}
+    hasBin: true
+    dependencies:
+      case-anything: 2.1.13
+      protobufjs: 7.2.6
+      ts-poet: 6.9.0
+      ts-proto-descriptors: 1.15.0
+    dev: false
 
   /tsconfig-paths@3.15.0:
     resolution: {integrity: sha512-2Ac2RgzDe/cn48GvOe3M+o82pEFewD3UPbyoUHHdKasHwJKjds4fLXWf/Ux5kATBKN20oaFGu+jbElp1pos0mg==}
