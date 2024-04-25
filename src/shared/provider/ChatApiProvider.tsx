@@ -1,9 +1,12 @@
-import React, { ReactNode, FC, createContext, useMemo, useState, useEffect , useCallback } from 'react';
+import React, { ReactNode, FC, createContext, useMemo, useState, useEffect, useCallback } from 'react';
 import ChatApi from '../client/ChatApi';
 import WsProvider from '../client/provider/WsProvider';
 import { useActiveAccount } from '../hooks/accounts';
 import { useActiveNetwork } from '../hooks/network';
 import messagesStorage from '../storages/messageStorage';
+import { ZMessage } from '@root/src/proto/zmessage';
+import { u8aToString } from '../utils';
+import { ChatMessage } from '@root/src/proto/ChatMessage';
 export interface ChatApiContextProps {
   api?: ChatApi;
   setEndpoints?: (endpoints: string | string[]) => void;
@@ -43,10 +46,10 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
   }, [api]);
 
   // get bootstrap node
-  useEffect(() => {
-    if (!api) return;
-    api.bootstrapGetNode();
-  }, [activeAccount?.address, api]);
+  // useEffect(() => {
+  //   if (!api) return;
+  //   api.bootstrapGetNode();
+  // }, [activeAccount?.address, api]);
 
   // login
   useEffect(() => {
@@ -56,16 +59,20 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
     return () => {};
   }, [activeAccount?.address, api]);
   const handleReceiveMessage = useCallback(
-    async (message: unknown) => {
+    async (message: ZMessage) => {
       if (!activeAccount) return;
-      console.log('handleReceiveMessage', message);
-      const from = activeAccount?.address;
-      const to = '02944ffd4c3be04908d962fa3622b776e167933149ebca1aeed905455640a8a2bc';
+      const from = u8aToString(message.from);
+      const to = u8aToString(message.to);
       const key = `${from}_${to}`;
+      const chatMessage = ChatMessage.decode(message.data);
+      const textMessage = u8aToString(chatMessage.data);
+
+      console.log('handleReceiveMessage', message, chatMessage);
+
       await messagesStorage.addMessage(key, {
-        from: '02944ffd4c3be04908d962fa3622b776e167933149ebca1aeed905455640a8a2bc',
+        from,
         to: activeAccount?.address,
-        message: message as string,
+        message: textMessage,
         sign: '',
       });
     },
@@ -74,7 +81,7 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
   useEffect(() => {
     if (!api) return;
     if (!activeAccount?.address) return;
-    api.accountSubscribeMessage(handleReceiveMessage);
+    api.accountSubscribeMessage(handleReceiveMessage as never);
   }, [activeAccount?.address, api, handleReceiveMessage]);
   return <ChatApiContext.Provider value={value}>{children}</ChatApiContext.Provider>;
 };

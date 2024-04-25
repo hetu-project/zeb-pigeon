@@ -1,59 +1,49 @@
 /* eslint-disable */
+import Long from 'long';
 import _m0 from 'protobufjs/minimal';
 
 export const protobufPackage = '';
 
-export enum ZType {
-  Z_TYPE_RNG = 0,
-  Z_TYPE_EVENT = 1,
-  Z_TYPE_CLOCK = 2,
+export enum ChatType {
+  CHAT_TYPE_MESSAGE = 0,
   UNRECOGNIZED = -1,
 }
 
-export function zTypeFromJSON(object: any): ZType {
+export function chatTypeFromJSON(object: any): ChatType {
   switch (object) {
     case 0:
-    case 'Z_TYPE_RNG':
-      return ZType.Z_TYPE_RNG;
-    case 1:
-    case 'Z_TYPE_EVENT':
-      return ZType.Z_TYPE_EVENT;
-    case 2:
-    case 'Z_TYPE_CLOCK':
-      return ZType.Z_TYPE_CLOCK;
+    case 'CHAT_TYPE_MESSAGE':
+      return ChatType.CHAT_TYPE_MESSAGE;
     case -1:
     case 'UNRECOGNIZED':
     default:
-      return ZType.UNRECOGNIZED;
+      return ChatType.UNRECOGNIZED;
   }
 }
 
-export function zTypeToJSON(object: ZType): string {
+export function chatTypeToJSON(object: ChatType): string {
   switch (object) {
-    case ZType.Z_TYPE_RNG:
-      return 'Z_TYPE_RNG';
-    case ZType.Z_TYPE_EVENT:
-      return 'Z_TYPE_EVENT';
-    case ZType.Z_TYPE_CLOCK:
-      return 'Z_TYPE_CLOCK';
-    case ZType.UNRECOGNIZED:
+    case ChatType.CHAT_TYPE_MESSAGE:
+      return 'CHAT_TYPE_MESSAGE';
+    case ChatType.UNRECOGNIZED:
     default:
       return 'UNRECOGNIZED';
   }
 }
 
-export interface ZMessage {
+export interface ChatMessage {
   id: Uint8Array;
   version: number;
-  type: ZType;
+  type: ChatType;
   publicKey: Uint8Array;
   data: Uint8Array;
   signature: Uint8Array;
   from: Uint8Array;
   to: Uint8Array;
+  timestamp: string;
 }
 
-function createBaseZMessage(): ZMessage {
+function createBaseChatMessage(): ChatMessage {
   return {
     id: new Uint8Array(0),
     version: 0,
@@ -63,11 +53,12 @@ function createBaseZMessage(): ZMessage {
     signature: new Uint8Array(0),
     from: new Uint8Array(0),
     to: new Uint8Array(0),
+    timestamp: '0',
   };
 }
 
-export const ZMessage = {
-  encode(message: ZMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const ChatMessage = {
+  encode(message: ChatMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id.length !== 0) {
       writer.uint32(10).bytes(message.id);
     }
@@ -92,13 +83,16 @@ export const ZMessage = {
     if (message.to.length !== 0) {
       writer.uint32(66).bytes(message.to);
     }
+    if (message.timestamp !== '0') {
+      writer.uint32(72).uint64(message.timestamp);
+    }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): ZMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): ChatMessage {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseZMessage();
+    const message = createBaseChatMessage();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -158,6 +152,13 @@ export const ZMessage = {
 
           message.to = reader.bytes();
           continue;
+        case 9:
+          if (tag !== 72) {
+            break;
+          }
+
+          message.timestamp = longToString(reader.uint64() as Long);
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -167,20 +168,21 @@ export const ZMessage = {
     return message;
   },
 
-  fromJSON(object: any): ZMessage {
+  fromJSON(object: any): ChatMessage {
     return {
       id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
       version: isSet(object.version) ? globalThis.Number(object.version) : 0,
-      type: isSet(object.type) ? zTypeFromJSON(object.type) : 0,
+      type: isSet(object.type) ? chatTypeFromJSON(object.type) : 0,
       publicKey: isSet(object.publicKey) ? bytesFromBase64(object.publicKey) : new Uint8Array(0),
       data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
       signature: isSet(object.signature) ? bytesFromBase64(object.signature) : new Uint8Array(0),
       from: isSet(object.from) ? bytesFromBase64(object.from) : new Uint8Array(0),
       to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
+      timestamp: isSet(object.timestamp) ? globalThis.String(object.timestamp) : '0',
     };
   },
 
-  toJSON(message: ZMessage): unknown {
+  toJSON(message: ChatMessage): unknown {
     const obj: any = {};
     if (message.id.length !== 0) {
       obj.id = base64FromBytes(message.id);
@@ -189,7 +191,7 @@ export const ZMessage = {
       obj.version = Math.round(message.version);
     }
     if (message.type !== 0) {
-      obj.type = zTypeToJSON(message.type);
+      obj.type = chatTypeToJSON(message.type);
     }
     if (message.publicKey.length !== 0) {
       obj.publicKey = base64FromBytes(message.publicKey);
@@ -206,14 +208,17 @@ export const ZMessage = {
     if (message.to.length !== 0) {
       obj.to = base64FromBytes(message.to);
     }
+    if (message.timestamp !== '0') {
+      obj.timestamp = message.timestamp;
+    }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ZMessage>, I>>(base?: I): ZMessage {
-    return ZMessage.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<ChatMessage>, I>>(base?: I): ChatMessage {
+    return ChatMessage.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ZMessage>, I>>(object: I): ZMessage {
-    const message = createBaseZMessage();
+  fromPartial<I extends Exact<DeepPartial<ChatMessage>, I>>(object: I): ChatMessage {
+    const message = createBaseChatMessage();
     message.id = object.id ?? new Uint8Array(0);
     message.version = object.version ?? 0;
     message.type = object.type ?? 0;
@@ -222,6 +227,7 @@ export const ZMessage = {
     message.signature = object.signature ?? new Uint8Array(0);
     message.from = object.from ?? new Uint8Array(0);
     message.to = object.to ?? new Uint8Array(0);
+    message.timestamp = object.timestamp ?? '0';
     return message;
   },
 };
@@ -267,6 +273,15 @@ type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function longToString(long: Long) {
+  return long.toString();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

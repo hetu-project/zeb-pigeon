@@ -43,15 +43,15 @@ export default function Guide() {
     if (!isValidate) {
       return;
     }
-    const hdKey = Mnemonic.generateHdKeyFromMnemonic(mnemonic);
-    // const hdKey = Mnemonic.generateEd25519FromMnemonic(mnemonic);
-    const address = etc.bytesToHex(hdKey.publicKey);
+    // const hdKey = Mnemonic.generateHdKeyFromMnemonic(mnemonic);
+    const hdKey = Mnemonic.generateEd25519FromMnemonic(mnemonic);
+    const address = etc.bytesToHex(hdKey.publicKeyRaw);
     keystoreStorage.add(address);
     accountStorage.add(address, {
       name: accountName || `Account_${address.substring(0, 6)}`,
       address: address,
       mnemonic,
-      publicKey: etc.bytesToHex(hdKey.publicKey),
+      publicKey: etc.bytesToHex(hdKey.publicKeyRaw),
       privateKey: etc.bytesToHex(hdKey.privateKey),
     });
     navigate('/home/account');
