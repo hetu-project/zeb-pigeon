@@ -7,6 +7,7 @@ import messagesStorage from '../storages/messageStorage';
 import { ZMessage } from '@root/src/proto/zmessage';
 import { u8aToString } from '../utils';
 import { ChatMessage } from '@root/src/proto/ChatMessage';
+import { messageStorageSortKey } from '../account';
 export interface ChatApiContextProps {
   api?: ChatApi;
   setEndpoints?: (endpoints: string | string[]) => void;
@@ -61,20 +62,28 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
   const handleReceiveMessage = useCallback(
     async (message: ZMessage) => {
       if (!activeAccount) return;
-      const from = u8aToString(message.from);
-      const to = u8aToString(message.to);
-      const key = `${from}_${to}`;
       const chatMessage = ChatMessage.decode(message.data);
+      const from = u8aToString(message.from);
+      // const to = u8aToString(message.to);
+      const to = activeAccount?.address;
+
+      const key = messageStorageSortKey(from, to);
+
       const textMessage = u8aToString(chatMessage.data);
 
-      console.log('handleReceiveMessage', message, chatMessage);
+      // console.log('handleReceiveMessage', message, chatMessage);
 
-      await messagesStorage.addMessage(key, {
+      const receiveMessage = {
         from,
         to: activeAccount?.address,
         message: textMessage,
         sign: '',
-      });
+      };
+      console.log('handleReceiveMessage', message);
+      console.log('handleReceiveMessage', chatMessage);
+      console.log('handleReceiveMessage', receiveMessage);
+
+      await messagesStorage.addMessage(key, receiveMessage);
     },
     [activeAccount],
   );

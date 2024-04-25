@@ -12,6 +12,8 @@ import { useChatApi } from '@root/src/shared/hooks/chat';
 import { useActiveAccount, useMessageList } from '@root/src/shared/hooks/accounts';
 import messagesStorage from '@root/src/shared/storages/messageStorage';
 import messagesSessionStorage from '@root/src/shared/storages/messageSessionStorage';
+import { signChatMessage } from '@root/src/shared/account/sign';
+import { messageStorageSortKey } from '@root/src/shared/account';
 
 type Inputs = {
   message: string;
@@ -27,17 +29,8 @@ export default function MessageContent() {
   const address = match?.params?.address;
   const contact = useContactByAddress(address);
 
-  // useEffect(() => {
-  //   if (!chatApi || !address) return;
-  //   chatApi.nodeConnectNode(address);
-  // }, [address, chatApi]);
-
-  // useEffect(() => {
-  //   if (!chatApi || !address) return;
-  //   chatApi.accountPullMessage();
-  // }, [address, chatApi]);
   const storageKey = useMemo(() => {
-    return `${activeAccount?.address}_${contact?.address}`;
+    return messageStorageSortKey(activeAccount?.address, contact?.address);
   }, [activeAccount?.address, contact?.address]);
 
   const handleSend = useCallback(async () => {
@@ -45,8 +38,6 @@ export default function MessageContent() {
     if (!message) return;
     if (!activeAccount) return;
     if (!contact) return;
-
-    console.log('handleSend', message);
     setValue('message', '');
     const mf = {
       from: activeAccount.address,
@@ -54,9 +45,9 @@ export default function MessageContent() {
       message,
       sign: '',
     };
-    await chatApi.accountSendMessage(mf.from, mf.to, mf.message);
+    const signature = await signChatMessage(activeAccount, mf.message);
+    await chatApi.accountSendMessage(mf.from, mf.to, mf.message, signature);
 
-    // await chatApi.accountSendMessage(mf.to, mf.from, mf.message);
     messagesStorage.addMessage(storageKey, mf);
     messagesSessionStorage.updateSession(mf.from, { to: mf.to });
     return;

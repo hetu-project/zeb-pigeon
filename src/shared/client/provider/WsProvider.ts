@@ -114,11 +114,12 @@ export default class WsProvider implements ProviderInterface {
     // }
   };
 
-  private onSocketMessage = (message: MessageEvent<Uint8Array>): void => {
-    const buffer = message.data;
-    const decoded = ZMessage.decode(buffer);
+  private onSocketMessage = (message: MessageEvent<Blob>): void => {
+    message.data.arrayBuffer().then(buffer => {
+      const decoded = ZMessage.decode(new Uint8Array(buffer));
 
-    this.eventemitter.emit('account_receiveMessage', decoded);
+      this.eventemitter.emit('account_receiveMessage', decoded);
+    });
 
     // const response = JSON.parse(message.data) as JsonRpcResponse<string>;
     // console.log('onSocketMessage', message);
