@@ -14,6 +14,10 @@ import messagesStorage from '@root/src/shared/storages/messageStorage';
 import messagesSessionStorage from '@root/src/shared/storages/messageSessionStorage';
 import { signChatMessage } from '@root/src/shared/account/sign';
 import { messageStorageSortKey } from '@root/src/shared/account';
+import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
+import { useNetworkList } from '@root/src/shared/hooks/network';
+import useStorage from '@root/src/shared/hooks/useStorage';
+import activeTargetNodeStorage from '@root/src/shared/storages/activeTargetNodeStorage';
 
 type Inputs = {
   message: string;
@@ -32,12 +36,24 @@ export default function MessageContent() {
   const storageKey = useMemo(() => {
     return messageStorageSortKey(activeAccount?.address, contact?.address);
   }, [activeAccount?.address, contact?.address]);
+  const networkNodeList = useNetworkList();
+
+  const targetNodeKey = useStorage(activeTargetNodeStorage);
+
+  const toNode = useMemo(() => {
+    return (
+      networkNodeList.find(node => {
+        return node.name === targetNodeKey;
+      }) || networkNodeList?.[0]
+    );
+  }, [networkNodeList, targetNodeKey]);
 
   const handleSend = useCallback(async () => {
     const message = getValues('message');
     if (!message) return;
     if (!activeAccount) return;
     if (!contact) return;
+    if (!toNode?.agent) return;
     setValue('message', '');
     const mf = {
       from: activeAccount.address,
@@ -46,12 +62,12 @@ export default function MessageContent() {
       sign: '',
     };
     const signature = await signChatMessage(activeAccount, mf.message);
-    await chatApi.accountSendMessage(mf.from, mf.to, mf.message, signature);
+    await chatApi.accountSendMessage(mf.from, mf.to, mf.message, toNode?.agent, signature);
 
     messagesStorage.addMessage(storageKey, mf);
     messagesSessionStorage.updateSession(mf.from, { to: mf.to });
     return;
-  }, [activeAccount, chatApi, contact, getValues, setValue, storageKey]);
+  }, [activeAccount, chatApi, contact, getValues, setValue, storageKey, toNode?.agent]);
 
   const handleKeyUp = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -87,20 +103,44 @@ export default function MessageContent() {
           <div className={' mx-2 my-2 px-2 py-2 rounded-full'}>
             <NoSymbolIcon className="w-5 h-5 cursor-pointer text-[#9AA0A6]" onClick={clearMessage} />
           </div>
+          <div className="flex items-center ml-4">
+            <div className="mr-2">Target Node:</div>
+            <div>
+              <Menu>
+                <MenuButton>
+                  <div className="w-40 flex justify-start truncate overflow-hidden">
+                    {toNode ? toNode.name : 'Select'}
+                  </div>
+                </MenuButton>
+                <MenuList className="flex flex-col gap-2 bg-black rounded-lg p-4">
+                  {networkNodeList.map(net => {
+                    return (
+                      <MenuItem
+                        key={net.name}
+                        className=' p-1 hover:bg-[#4F52B2] rounded-sm"'
+                        onClick={() => {
+                          activeTargetNodeStorage.set(net.name);
+                        }}>
+                        {net.name}
+                      </MenuItem>
+                    );
+                  })}
+                </MenuList>
+              </Menu>
+            </div>
+          </div>
         </div>
       </div>
       <div className="flex-grow overflow-hidden flex flex-col justify-end">
         <MessageList list={messageList} />
       </div>
       <div className="flex items-center mb-3 mx-3 gap-3">
-        <div className="h-12 rounded-3xl zm-bg-card flex items-center px-4 flex-grow">
-          <input
-            {...register('message')}
-            className=" input input-xs bg-transparent flex-grow h-full"
-            placeholder="Message......"
-            onKeyUp={handleKeyUp}
-          />
-        </div>
+        <input
+          {...register('message')}
+          className=" input input-xs flex-grow zm-bg-card h-12 rounded-3xl flex items-center px-4"
+          placeholder="Message......"
+          onKeyUp={handleKeyUp}
+        />
         <button className="h-12 w-12 rounded-full zm-bg-card flex items-center justify-center" onClick={handleSend}>
           <PaperAirplaneIcon className="h-6 w-6" />
         </button>
