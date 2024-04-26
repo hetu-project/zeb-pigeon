@@ -87,7 +87,7 @@ export default class ChatApi {
     ]);
   }
 
-  public async accountSendMessage(from: string, to: string, message: string, signature?: Uint8Array) {
+  public async accountSendMessage(from: string, to: string, message: string, node: string, signature?: Uint8Array) {
     const chatMessage = ChatMessage.create({
       id: blake2s(stringToU8a(message + new Date().getMilliseconds())),
       version: 0,
@@ -108,7 +108,7 @@ export default class ChatApi {
       data: chatBuffer,
       signature: signature,
       from: u8aToU8a(from),
-      to: u8aToU8a(to),
+      to: u8aToU8a(node),
     });
     const buffer = ZMessage.encode(messageCreated).finish();
 

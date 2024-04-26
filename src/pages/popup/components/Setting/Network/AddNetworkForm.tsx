@@ -5,10 +5,12 @@ import { Button } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import networkStorage from '@root/src/shared/storages/networkStorage';
 import { useNetworkList } from '@root/src/shared/hooks/network';
+import clsx from 'clsx';
 
 type Inputs = {
   name: string;
   url: string;
+  agent: string;
 };
 export default function AddNetworkForm() {
   const { register, getValues, setValue } = useForm<Inputs>();
@@ -23,6 +25,7 @@ export default function AddNetworkForm() {
       if (!config) return;
       setValue('name', config.name);
       setValue('url', config.url);
+      setValue('agent', config.agent);
     }
   }, [allNetwork, match?.params?.name, setValue]);
   useEffect(() => {
@@ -31,10 +34,12 @@ export default function AddNetworkForm() {
   const handleAddNetwork = useCallback(async () => {
     const name = getValues('name');
     const url = getValues('url');
+    const agent = getValues('agent');
     if (!name || !url) return;
     await networkStorage.add(name, {
       name,
       url,
+      agent,
     });
     navigate(-1);
   }, [getValues, navigate]);
@@ -53,11 +58,21 @@ export default function AddNetworkForm() {
       <div className="flex flex-col gap-4 mt-10 px-2">
         <div className="">
           <div>{'Name:'}</div>
-          <input className="w-full input input-sm border zm-bg-card" {...register('name')} />
+          <input
+            disabled={!!match}
+            className={clsx('w-full input-sm zm-bg-card border-none rounded-lg', {
+              ' zm-text-description': !!match,
+            })}
+            {...register('name')}
+          />
         </div>
         <div className="">
           <div>{'Url:'}</div>
           <input className="w-full input input-sm border zm-bg-card" {...register('url')} />
+        </div>
+        <div className="">
+          <div>{'Agent:'}</div>
+          <input className="w-full input input-sm border zm-bg-card" {...register('agent')} />
         </div>
       </div>
       <div className="flex items-center justify-center gap-4 mt-7">

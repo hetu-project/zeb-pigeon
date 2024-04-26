@@ -63,9 +63,10 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
     async (message: ZMessage) => {
       if (!activeAccount) return;
       const chatMessage = ChatMessage.decode(message.data);
-      const from = u8aToString(message.from);
-      // const to = u8aToString(message.to);
-      const to = activeAccount?.address;
+      const from = u8aToString(chatMessage.from);
+      const to = u8aToString(chatMessage.to);
+      // const to = activeAccount?.address;
+      if (activeAccount.address !== to) return;
 
       const key = messageStorageSortKey(from, to);
 
