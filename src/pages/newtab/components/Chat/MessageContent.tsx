@@ -15,7 +15,7 @@ import messagesSessionStorage from '@root/src/shared/storages/messageSessionStor
 import { signChatMessage } from '@root/src/shared/account/sign';
 import { messageStorageSortKey } from '@root/src/shared/account';
 import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
-import { useNetworkList } from '@root/src/shared/hooks/network';
+import { useActiveNetwork, useNetworkList } from '@root/src/shared/hooks/network';
 import useStorage from '@root/src/shared/hooks/useStorage';
 import activeTargetNodeStorage from '@root/src/shared/storages/activeTargetNodeStorage';
 
@@ -32,6 +32,7 @@ export default function MessageContent() {
   const match = useMatch('/chat/:address');
   const address = match?.params?.address;
   const contact = useContactByAddress(address);
+  const activeNetwork = useActiveNetwork();
 
   const storageKey = useMemo(() => {
     return messageStorageSortKey(activeAccount?.address, contact?.address);
@@ -62,12 +63,12 @@ export default function MessageContent() {
       sign: '',
     };
     const signature = await signChatMessage(activeAccount, mf.message);
-    await chatApi.accountSendMessage(mf.from, mf.to, mf.message, toNode?.agent, signature);
+    await chatApi.accountSendMessage(mf.from, mf.to, mf.message, activeNetwork?.agent, toNode?.agent, signature);
 
     messagesStorage.addMessage(storageKey, mf);
     messagesSessionStorage.updateSession(mf.from, { to: mf.to });
     return;
-  }, [activeAccount, chatApi, contact, getValues, setValue, storageKey, toNode?.agent]);
+  }, [activeAccount, activeNetwork?.agent, chatApi, contact, getValues, setValue, storageKey, toNode?.agent]);
 
   const handleKeyUp = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {

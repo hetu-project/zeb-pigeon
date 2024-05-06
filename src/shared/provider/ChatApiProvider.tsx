@@ -80,7 +80,6 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
         message: textMessage,
         sign: '',
       };
-      console.log('handleReceiveMessage', message);
       console.log('handleReceiveMessage', chatMessage);
       console.log('handleReceiveMessage', receiveMessage);
 

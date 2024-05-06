@@ -1,8 +1,10 @@
 import { ChatMessage, ChatType } from '@root/src/proto/ChatMessage';
 import { ProviderInterfaceCallback } from './provider';
 import WsProvider from './provider/WsProvider';
-import { ZMessage, ZType } from '@src/proto/zmessage';
-import { stringToU8a, u8aToU8a } from '@src/shared/utils';
+// import { ZMessage, ZType } from '@src/proto/zmessage';
+import { ZMessage, ZType } from '@src/proto/ZMsg';
+
+import { hexToU8a, stringToU8a, u8aToU8a } from '@src/shared/utils';
 import { blake2s } from '@noble/hashes/blake2s';
 
 export interface JsonRpcObject {
@@ -87,7 +89,14 @@ export default class ChatApi {
     ]);
   }
 
-  public async accountSendMessage(from: string, to: string, message: string, node: string, signature?: Uint8Array) {
+  public async accountSendMessage(
+    from: string,
+    to: string,
+    message: string,
+    fromNode: string,
+    node: string,
+    signature?: Uint8Array,
+  ) {
     const chatMessage = ChatMessage.create({
       id: blake2s(stringToU8a(message + new Date().getMilliseconds())),
       version: 0,
@@ -107,8 +116,8 @@ export default class ChatApi {
       publicKey: u8aToU8a(from),
       data: chatBuffer,
       signature: signature,
-      from: u8aToU8a(from),
-      to: u8aToU8a(node),
+      from: hexToU8a(fromNode),
+      to: hexToU8a(node),
     });
     const buffer = ZMessage.encode(messageCreated).finish();
 
