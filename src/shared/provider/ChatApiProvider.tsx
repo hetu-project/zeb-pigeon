@@ -5,9 +5,10 @@ import { useActiveAccount } from '../hooks/accounts';
 import { useActiveNetwork } from '../hooks/network';
 import messagesStorage from '../storages/messageStorage';
 import { ZMessage } from '@root/src/proto/zmessage';
-import { u8aToString } from '../utils';
+import { hexToU8a, u8aToString } from '../utils';
 import { ChatMessage } from '@root/src/proto/ChatMessage';
 import { messageStorageSortKey } from '../account';
+import { ZChat } from '@root/src/proto/ZMsg';
 export interface ChatApiContextProps {
   api?: ChatApi;
   setEndpoints?: (endpoints: string | string[]) => void;
@@ -62,7 +63,9 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
   const handleReceiveMessage = useCallback(
     async (message: ZMessage) => {
       if (!activeAccount) return;
-      const chatMessage = ChatMessage.decode(message.data);
+      const zChat = ZChat.decode(message.data);
+      const chatMessageBuffer = hexToU8a(zChat.messageData);
+      const chatMessage = ChatMessage.decode(chatMessageBuffer);
       const from = u8aToString(chatMessage.from);
       const to = u8aToString(chatMessage.to);
       // const to = activeAccount?.address;

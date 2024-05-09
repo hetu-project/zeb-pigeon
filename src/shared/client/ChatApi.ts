@@ -2,9 +2,9 @@ import { ChatMessage, ChatType } from '@root/src/proto/ChatMessage';
 import { ProviderInterfaceCallback } from './provider';
 import WsProvider from './provider/WsProvider';
 // import { ZMessage, ZType } from '@src/proto/zmessage';
-import { ZMessage, ZType } from '@src/proto/ZMsg';
+import { Clock, ClockInfo, ZAction, ZChat, ZIdentity, ZMessage, ZType } from '@src/proto/ZMsg';
 
-import { hexToU8a, stringToU8a, u8aToU8a } from '@src/shared/utils';
+import { hexToU8a, stringToU8a, u8aToHex, u8aToU8a } from '@src/shared/utils';
 import { blake2s } from '@noble/hashes/blake2s';
 
 export interface JsonRpcObject {
@@ -98,32 +98,50 @@ export default class ChatApi {
     signature?: Uint8Array,
   ) {
     const chatMessage = ChatMessage.create({
-      id: blake2s(stringToU8a(message + new Date().getMilliseconds())),
+      // id: blake2s(stringToU8a(message + new Date().getMilliseconds())),
       version: 0,
       type: ChatType.CHAT_TYPE_MESSAGE,
-      publicKey: u8aToU8a(from),
+      // publicKey: u8aToU8a(from),
       data: stringToU8a(message),
-      signature: u8aToU8a(message),
+      // signature: u8aToU8a(message),
       from: u8aToU8a(from),
       to: u8aToU8a(to),
     });
     const chatBuffer = ChatMessage.encode(chatMessage).finish();
     const hashId = blake2s(chatBuffer);
+    const clock = Clock.create({
+      values: {},
+    });
+    const clockInfo = ClockInfo.create({
+      clock,
+      count: '1',
+      createAt: new Date().getMilliseconds().toString(),
+    });
+    const chat = ZChat.create({
+      messageData: u8aToHex(chatBuffer), // (message),
+      clock: clockInfo,
+    });
+    const data = ZChat.encode(chat).finish();
     const messageCreated = ZMessage.create({
-      id: hashId,
+      id: stringToU8a(u8aToHex(hashId)),
       version: 0,
-      type: ZType.Z_TYPE_RNG,
-      publicKey: u8aToU8a(from),
-      data: chatBuffer,
+      action: ZAction.Z_TYPE_WRITE,
+      type: ZType.Z_TYPE_ZCHAT,
+      identity: ZIdentity.U_TYPE_CLI,
+      // publicKey: u8aToU8a(from),
+      data: data,
       signature: signature,
-      from: hexToU8a(fromNode),
+      // from: hexToU8a(fromNode),
       to: hexToU8a(node),
     });
+    // const originBuffer = new Uint8Array(Array.from('24 4 32 1 58 34 10 16 55 102 101 57 53 55 100 54 57 57 55 49 54 54 101 52 18 14 10 0 18 1 49 26 3 50 50 50 32 1 40 123 82 32 247 142 90 57 227 212 51 152 108 75 128 38 208 186 235 98 183 235 132 92 41 187 131 160 75 121 214 69 239 126 251 186'.split(' ')).map((item) => Number(item)))
     const buffer = ZMessage.encode(messageCreated).finish();
-
-    console.log('messageCreated', messageCreated);
-
     this.provider.sendMessage(buffer);
+    // console.log('messageCreated', messageCreated);
+    // const originData = ZMessage.decode(originBuffer);
+    // const originDataBuffer = ZMessage.encode(originData).finish();
+    // console.log('messageCreated', originData);
+    // this.provider.sendMessage(originDataBuffer);
   }
 
   public async accountPullMessage() {
