@@ -1,6 +1,6 @@
 import React, { ReactNode, FC, createContext, useMemo, useState, useEffect, useCallback } from 'react';
 import ChatApi from '../client/ChatApi';
-import WsProvider from '../client/provider/WsProvider';
+// import WsProvider from '../client/provider/WsProvider';
 import { useActiveAccount } from '../hooks/accounts';
 import { useActiveNetwork } from '../hooks/network';
 import messagesStorage from '../storages/messageStorage';
@@ -9,6 +9,7 @@ import { hexToU8a, u8aToString } from '../utils';
 import { ChatMessage } from '@root/src/proto/ChatMessage';
 import { messageStorageSortKey } from '../account';
 import { ZChat } from '@root/src/proto/ZMsg';
+// import { ChatCommandFactory } from '../command/chat';
 export interface ChatApiContextProps {
   api?: ChatApi;
   setEndpoints?: (endpoints: string | string[]) => void;
@@ -21,7 +22,7 @@ interface ChatApiProviderProps {
   children: ReactNode;
 }
 const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
-  const [api, setApi] = useState<ChatApi | undefined>();
+  const [api] = useState<ChatApi | undefined>();
   const activeNetwork = useActiveNetwork();
   const endpoints = useMemo(() => {
     return activeNetwork?.url;
@@ -31,12 +32,13 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
   const activeAccount = useActiveAccount();
 
   useEffect(() => {
-    const wsProvider = new WsProvider(endpoints);
-    const chatApi = new ChatApi({
-      provider: wsProvider,
-    });
+    // const wsProvider = new WsProvider(endpoints);
+    // const chatApi = new ChatApi({
+    //   provider: wsProvider,
+    // });
+    // chrome.runtime.sendMessage(ChatCommandFactory.changeEndpoint(endpoints));
     setTimeout(() => {
-      setApi(chatApi);
+      // setApi(chatApi);
     }, 1000);
     return () => {};
   }, [endpoints]);
@@ -93,7 +95,7 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
   useEffect(() => {
     if (!api) return;
     if (!activeAccount?.address) return;
-    api.accountSubscribeMessage(handleReceiveMessage as never);
+    // api.accountSubscribeMessage(handleReceiveMessage as never);
   }, [activeAccount?.address, api, handleReceiveMessage]);
   return <ChatApiContext.Provider value={value}>{children}</ChatApiContext.Provider>;
 };

@@ -155,4 +155,10 @@ export default class ChatApi {
   public async accountSubscribeMessage(cb: ProviderInterfaceCallback) {
     this.provider.addEventListener('', 'account_receiveMessage', {}, cb);
   }
+  public async onError(cb: () => void) {
+    this.provider.eventemitter.addListener('error', cb);
+  }
+  public async onClose(cb: () => void) {
+    this.provider.eventemitter.addListener('close', cb);
+  }
 }

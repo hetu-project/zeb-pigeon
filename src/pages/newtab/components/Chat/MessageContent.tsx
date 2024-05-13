@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 // import { Button } from '@chakra-ui/react';
 
 import { useForm } from 'react-hook-form';
-import { useChatApi } from '@root/src/shared/hooks/chat';
+// import { useChatApi } from '@root/src/shared/hooks/chat';
 import { useActiveAccount, useMessageList } from '@root/src/shared/hooks/accounts';
 import messagesStorage from '@root/src/shared/storages/messageStorage';
 import messagesSessionStorage from '@root/src/shared/storages/messageSessionStorage';
@@ -18,6 +18,7 @@ import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
 import { useActiveNetwork, useNetworkList } from '@root/src/shared/hooks/network';
 import useStorage from '@root/src/shared/hooks/useStorage';
 import activeTargetNodeStorage from '@root/src/shared/storages/activeTargetNodeStorage';
+import { ChatCommandFactory } from '@root/src/shared/command/chat';
 
 type Inputs = {
   message: string;
@@ -27,7 +28,7 @@ export default function MessageContent() {
   const activeAccount = useActiveAccount();
 
   const { register, getValues, setValue } = useForm<Inputs>();
-  const chatApi = useChatApi();
+  // const chatApi = useChatApi();
 
   const match = useMatch('/chat/:address');
   const address = match?.params?.address;
@@ -63,12 +64,15 @@ export default function MessageContent() {
       sign: '',
     };
     const signature = await signChatMessage(activeAccount, mf.message);
-    await chatApi.accountSendMessage(mf.from, mf.to, mf.message, activeNetwork?.agent, toNode?.agent, signature);
+    // await chatApi.accountSendMessage(mf.from, mf.to, mf.message, activeNetwork?.agent, toNode?.agent, signature);
+    chrome.runtime.sendMessage(
+      ChatCommandFactory.sendMessage(mf.from, mf.to, mf.message, activeNetwork?.agent, toNode?.agent, signature),
+    );
 
     messagesStorage.addMessage(storageKey, mf);
     messagesSessionStorage.updateSession(mf.from, { to: mf.to });
     return;
-  }, [activeAccount, activeNetwork?.agent, chatApi, contact, getValues, setValue, storageKey, toNode?.agent]);
+  }, [activeAccount, activeNetwork?.agent, contact, getValues, setValue, storageKey, toNode?.agent]);
 
   const handleKeyUp = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {

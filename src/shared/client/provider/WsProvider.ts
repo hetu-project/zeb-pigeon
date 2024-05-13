@@ -18,11 +18,11 @@ interface WsStateAwaiting {
 }
 
 export default class WsProvider implements ProviderInterface {
-  private websocket: WebSocket | null;
+  websocket: WebSocket | null;
   private endpoints: string;
   private id: number = 0;
   private handlers: Record<string, WsStateAwaiting> = {};
-  private eventemitter: EventEmitter;
+  eventemitter: EventEmitter;
   constructor(endpoint: string | string[]) {
     this.eventemitter = new EventEmitter();
     const endpoints = Array.isArray(endpoint) ? endpoint : [endpoint];
@@ -33,6 +33,8 @@ export default class WsProvider implements ProviderInterface {
     this.websocket = new WebSocket(this.endpoints);
     if (this.websocket) {
       this.websocket.onmessage = this.onSocketMessage;
+      this.websocket.onerror = this.handleError;
+      this.websocket.onclose = this.handleClose;
     }
   }
   disconnect(): Promise<void> {
@@ -170,4 +172,10 @@ export default class WsProvider implements ProviderInterface {
   sendMessage(message: Uint8Array) {
     this.websocket.send(message);
   }
+  handleError = () => {
+    this.eventemitter.emit('error');
+  };
+  handleClose = () => {
+    this.eventemitter.emit('close');
+  };
 }

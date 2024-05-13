@@ -12,6 +12,7 @@ import { Button } from '@chakra-ui/react';
 import networkStorage from '@root/src/shared/storages/networkStorage';
 import { useActiveNetwork, useNetworkList } from '@root/src/shared/hooks/network';
 import activeNetworkStorage from '@root/src/shared/storages/activeNetworkStorage';
+import { ChatCommandFactory } from '@root/src/shared/command/chat';
 
 export interface NetworkItemProps {
   name?: string;
@@ -19,7 +20,7 @@ export interface NetworkItemProps {
   isActive?: boolean;
 }
 
-export const NetworkItem = ({ name, isActive }: NetworkItemProps) => {
+export const NetworkItem = ({ name, isActive, url }: NetworkItemProps) => {
   const navigate = useNavigate();
 
   const handleRemoveNetwork = useCallback(async () => {
@@ -30,7 +31,10 @@ export const NetworkItem = ({ name, isActive }: NetworkItemProps) => {
   const handleActiveNetwork = useCallback(async () => {
     if (!name) return;
     await activeNetworkStorage.add(name);
-  }, [name]);
+    if (!url) {
+      await chrome.runtime.sendMessage(ChatCommandFactory.changeEndpoint(url));
+    }
+  }, [name, url]);
 
   const handleEditNetwork = useCallback(async () => {
     if (!name) return;
