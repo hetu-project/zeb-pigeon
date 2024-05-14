@@ -2,6 +2,7 @@ import { ZMessage } from '@root/src/proto/zmessage';
 import { ProviderInterface, ProviderInterfaceCallback, ProviderInterfaceEmitCb, ProviderInterfaceEmitted } from '.';
 import { JsonRpcRequest, JsonRpcResponse } from '../ChatApi';
 import { EventEmitter } from 'eventemitter3';
+import { noop } from '@polkadot/util';
 // import { framework } from '@root/src/proto/zmessage';
 
 interface SubscriptionHandler {
@@ -17,28 +18,77 @@ interface WsStateAwaiting {
   subscription?: SubscriptionHandler | undefined;
 }
 
+const RETRY_DELAY = 5_000;
+
 export default class WsProvider implements ProviderInterface {
   websocket: WebSocket | null;
   private endpoints: string;
   private id: number = 0;
   private handlers: Record<string, WsStateAwaiting> = {};
+  private autoConnectMs = RETRY_DELAY;
+  public readonly isReadyPromise: Promise<WsProvider>;
   eventemitter: EventEmitter;
   constructor(endpoint: string | string[]) {
     this.eventemitter = new EventEmitter();
     const endpoints = Array.isArray(endpoint) ? endpoint : [endpoint];
     const defaultEndpoint = endpoints[0];
     this.endpoints = defaultEndpoint;
+    if (this.autoConnectMs && this.autoConnectMs > 0) {
+      this.connectWithRetry().catch(noop);
+    }
+    this.isReadyPromise = new Promise((resolve): void => {
+      this.eventemitter.once('connected', (): void => {
+        resolve(this);
+      });
+    });
   }
-  public async connect(): Promise<void> {
-    this.websocket = new WebSocket(this.endpoints);
-    if (this.websocket) {
-      this.websocket.onmessage = this.onSocketMessage;
-      this.websocket.onerror = this.handleError;
-      this.websocket.onclose = this.handleClose;
+
+  public async connectWithRetry(): Promise<void> {
+    if (this.autoConnectMs > 0) {
+      try {
+        await this.connect();
+      } catch {
+        setTimeout((): void => {
+          this.connectWithRetry().catch(noop);
+        }, this.autoConnectMs);
+      }
     }
   }
-  disconnect(): Promise<void> {
-    throw new Error('Method not implemented.');
+  public async connect(): Promise<void> {
+    if (this.websocket) {
+      throw new Error('WebSocket is already connected');
+    }
+    try {
+      this.websocket = new WebSocket(this.endpoints);
+      if (this.websocket) {
+        this.websocket.onmessage = this.onSocketMessage;
+        this.websocket.onerror = this.handleError;
+        this.websocket.onclose = this.handleClose;
+        this.websocket.onopen = this.handleSocketOpen;
+      }
+    } catch (error) {
+      // l.error(error);
+
+      this.eventemitter.emit('error', error);
+
+      throw error;
+    }
+  }
+  public async disconnect(): Promise<void> {
+    this.autoConnectMs = 0;
+    try {
+      if (this.websocket) {
+        // 1000 - Normal closure; the connection successfully completed
+        this.websocket.close(1000);
+        this.eventemitter.removeAllListeners();
+      }
+    } catch (error) {
+      console.error(error);
+
+      this.eventemitter.emit('error', error);
+
+      throw error;
+    }
   }
 
   private onSocketMessageResult = (response: JsonRpcResponse<string>): void => {
@@ -174,9 +224,37 @@ export default class WsProvider implements ProviderInterface {
     this.websocket.send(message);
   }
   handleError = () => {
+    if (this.websocket) {
+      this.websocket.onclose = null;
+      this.websocket.onerror = null;
+      this.websocket.onmessage = null;
+      this.websocket.onopen = null;
+      this.websocket = null;
+    }
+    if (this.autoConnectMs > 0) {
+      setTimeout((): void => {
+        this.connectWithRetry().catch(noop);
+      }, this.autoConnectMs);
+    }
     this.eventemitter.emit('error');
   };
+  handleSocketOpen = () => {
+    this.eventemitter.emit('connected');
+  };
   handleClose = () => {
+    if (this.websocket) {
+      this.websocket.onclose = null;
+      this.websocket.onerror = null;
+      this.websocket.onmessage = null;
+      this.websocket.onopen = null;
+      this.websocket = null;
+    }
+    if (this.autoConnectMs > 0) {
+      setTimeout((): void => {
+        this.connectWithRetry().catch(noop);
+      }, this.autoConnectMs);
+    }
     this.eventemitter.emit('close');
+    this.eventemitter.emit('disconnected');
   };
 }

@@ -52,16 +52,10 @@ export interface ChatApiOptions {
   provider?: WsProvider;
 }
 export default class ChatApi {
-  private isReadyPromise: Promise<ChatApi>;
   provider: WsProvider;
   private mid = 0;
   constructor(options?: ChatApiOptions) {
     this.provider = options.provider;
-    this.isReadyPromise = new Promise(resolve => {
-      this.provider.connect().then(() => {
-        resolve(this);
-      });
-    });
   }
 
   public static create(options?: ChatApiOptions): Promise<ChatApi> {
@@ -69,7 +63,15 @@ export default class ChatApi {
     return instance.isReady;
   }
   public get isReady(): Promise<ChatApi> {
-    return this.isReadyPromise;
+    return new Promise((resolve, reject) => {
+      this.provider.isReadyPromise
+        .then(() => {
+          resolve(this);
+        })
+        .catch(e => {
+          reject(e);
+        });
+    });
   }
 
   public async bootstrapGetNode() {
