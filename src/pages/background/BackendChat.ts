@@ -14,8 +14,7 @@ export class BackendChat {
 
   changeEndPoint(endpoint: string) {
     if (this.chatApi) {
-      this.chatApi.provider.websocket.close();
-      // this.disconnect();
+      this.chatApi.provider.disconnect();
     }
     this.endpoint = endpoint;
     const wsProvider = new WsProvider(endpoint);

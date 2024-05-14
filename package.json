@@ -1,11 +1,11 @@
 {
-  "name": "ZMessager",
+  "name": "pigeon",
   "version": "0.0.1",
-  "description": "ZMessager",
+  "description": "Pigeon",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite.git"
+    "url": "https://github.com/NagaraTech/z-message-extension.git"
   },
   "scripts": {
     "pbjs:message": "pnpm pbjs -t  static-module -w es6 --es6  src/proto/zmessage.proto -o src/proto/zmessage.ts",
