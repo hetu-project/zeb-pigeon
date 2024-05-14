@@ -118,7 +118,8 @@ export default class WsProvider implements ProviderInterface {
 
   private onSocketMessage = (message: MessageEvent<Blob>): void => {
     message.data.arrayBuffer().then(buffer => {
-      // const decoded = ZMessage.decode(new Uint8Array(buffer));
+      // const decodedOrigin = ZChat.decode(new Uint8Array(buffer));
+      // console.log('onSocketMessage', decodedOrigin);
       const decoded = ZMessage.create({
         data: new Uint8Array(buffer),
       });

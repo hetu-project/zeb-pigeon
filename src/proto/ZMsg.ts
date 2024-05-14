@@ -4,111 +4,6 @@ import _m0 from 'protobufjs/minimal';
 
 export const protobufPackage = 'protos';
 
-export enum ZIdentity {
-  /** U_TYPE_CLI - client */
-  U_TYPE_CLI = 0,
-  /** U_TYPE_SER - server */
-  U_TYPE_SER = 1,
-  UNRECOGNIZED = -1,
-}
-
-export function zIdentityFromJSON(object: any): ZIdentity {
-  switch (object) {
-    case 0:
-    case 'U_TYPE_CLI':
-      return ZIdentity.U_TYPE_CLI;
-    case 1:
-    case 'U_TYPE_SER':
-      return ZIdentity.U_TYPE_SER;
-    case -1:
-    case 'UNRECOGNIZED':
-    default:
-      return ZIdentity.UNRECOGNIZED;
-  }
-}
-
-export function zIdentityToJSON(object: ZIdentity): string {
-  switch (object) {
-    case ZIdentity.U_TYPE_CLI:
-      return 'U_TYPE_CLI';
-    case ZIdentity.U_TYPE_SER:
-      return 'U_TYPE_SER';
-    case ZIdentity.UNRECOGNIZED:
-    default:
-      return 'UNRECOGNIZED';
-  }
-}
-
-export enum ZAction {
-  /** Z_TYPE_READ - read */
-  Z_TYPE_READ = 0,
-  /** Z_TYPE_WRITE - write */
-  Z_TYPE_WRITE = 1,
-  UNRECOGNIZED = -1,
-}
-
-export function zActionFromJSON(object: any): ZAction {
-  switch (object) {
-    case 0:
-    case 'Z_TYPE_READ':
-      return ZAction.Z_TYPE_READ;
-    case 1:
-    case 'Z_TYPE_WRITE':
-      return ZAction.Z_TYPE_WRITE;
-    case -1:
-    case 'UNRECOGNIZED':
-    default:
-      return ZAction.UNRECOGNIZED;
-  }
-}
-
-export function zActionToJSON(object: ZAction): string {
-  switch (object) {
-    case ZAction.Z_TYPE_READ:
-      return 'Z_TYPE_READ';
-    case ZAction.Z_TYPE_WRITE:
-      return 'Z_TYPE_WRITE';
-    case ZAction.UNRECOGNIZED:
-    default:
-      return 'UNRECOGNIZED';
-  }
-}
-
-export enum ZPushType {
-  /** Z_TYPE_DM - direct msg */
-  Z_TYPE_DM = 0,
-  /** Z_TYPE_BC - broadcast */
-  Z_TYPE_BC = 1,
-  UNRECOGNIZED = -1,
-}
-
-export function zPushTypeFromJSON(object: any): ZPushType {
-  switch (object) {
-    case 0:
-    case 'Z_TYPE_DM':
-      return ZPushType.Z_TYPE_DM;
-    case 1:
-    case 'Z_TYPE_BC':
-      return ZPushType.Z_TYPE_BC;
-    case -1:
-    case 'UNRECOGNIZED':
-    default:
-      return ZPushType.UNRECOGNIZED;
-  }
-}
-
-export function zPushTypeToJSON(object: ZPushType): string {
-  switch (object) {
-    case ZPushType.Z_TYPE_DM:
-      return 'Z_TYPE_DM';
-    case ZPushType.Z_TYPE_BC:
-      return 'Z_TYPE_BC';
-    case ZPushType.UNRECOGNIZED:
-    default:
-      return 'UNRECOGNIZED';
-  }
-}
-
 export enum ZType {
   Z_TYPE_RNG = 0,
   Z_TYPE_EVENT = 1,
@@ -160,47 +55,218 @@ export function zTypeToJSON(object: ZType): string {
   }
 }
 
-export interface Zp2p {
-  version: number;
-  /** for p2p */
-  type: ZIdentity;
-  /** for p2p */
-  action: ZAction;
-  /** for vlc */
-  pushType: ZPushType;
-  message: ZMessage | undefined;
-  publicKey: Uint8Array;
-  /** for verifying */
-  signature: Uint8Array;
+export enum ClockType {
+  CLOCK_TYPE_EVENT_TRIGGER = 0,
+  CLOCK_TYPE_DIFF_REQ = 1,
+  CLOCK_TYPE_DIFF_RSP = 2,
+  CLOCK_TYPE_ACTIVE_SYNC = 3,
+  UNRECOGNIZED = -1,
 }
 
-/** ZMessage */
+export function clockTypeFromJSON(object: any): ClockType {
+  switch (object) {
+    case 0:
+    case 'CLOCK_TYPE_EVENT_TRIGGER':
+      return ClockType.CLOCK_TYPE_EVENT_TRIGGER;
+    case 1:
+    case 'CLOCK_TYPE_DIFF_REQ':
+      return ClockType.CLOCK_TYPE_DIFF_REQ;
+    case 2:
+    case 'CLOCK_TYPE_DIFF_RSP':
+      return ClockType.CLOCK_TYPE_DIFF_RSP;
+    case 3:
+    case 'CLOCK_TYPE_ACTIVE_SYNC':
+      return ClockType.CLOCK_TYPE_ACTIVE_SYNC;
+    case -1:
+    case 'UNRECOGNIZED':
+    default:
+      return ClockType.UNRECOGNIZED;
+  }
+}
+
+export function clockTypeToJSON(object: ClockType): string {
+  switch (object) {
+    case ClockType.CLOCK_TYPE_EVENT_TRIGGER:
+      return 'CLOCK_TYPE_EVENT_TRIGGER';
+    case ClockType.CLOCK_TYPE_DIFF_REQ:
+      return 'CLOCK_TYPE_DIFF_REQ';
+    case ClockType.CLOCK_TYPE_DIFF_RSP:
+      return 'CLOCK_TYPE_DIFF_RSP';
+    case ClockType.CLOCK_TYPE_ACTIVE_SYNC:
+      return 'CLOCK_TYPE_ACTIVE_SYNC';
+    case ClockType.UNRECOGNIZED:
+    default:
+      return 'UNRECOGNIZED';
+  }
+}
+
+export enum Identity {
+  IDENTITY_CLIENT = 0,
+  IDENTITY_SERVER = 1,
+  IDENTITY_INIT = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function identityFromJSON(object: any): Identity {
+  switch (object) {
+    case 0:
+    case 'IDENTITY_CLIENT':
+      return Identity.IDENTITY_CLIENT;
+    case 1:
+    case 'IDENTITY_SERVER':
+      return Identity.IDENTITY_SERVER;
+    case 2:
+    case 'IDENTITY_INIT':
+      return Identity.IDENTITY_INIT;
+    case -1:
+    case 'UNRECOGNIZED':
+    default:
+      return Identity.UNRECOGNIZED;
+  }
+}
+
+export function identityToJSON(object: Identity): string {
+  switch (object) {
+    case Identity.IDENTITY_CLIENT:
+      return 'IDENTITY_CLIENT';
+    case Identity.IDENTITY_SERVER:
+      return 'IDENTITY_SERVER';
+    case Identity.IDENTITY_INIT:
+      return 'IDENTITY_INIT';
+    case Identity.UNRECOGNIZED:
+    default:
+      return 'UNRECOGNIZED';
+  }
+}
+
+export enum Action {
+  ACTION_READ = 0,
+  ACTION_WRITE = 1,
+  ACTION_READ_REPLY = 2,
+  ACTION_WRITE_REPLY = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function actionFromJSON(object: any): Action {
+  switch (object) {
+    case 0:
+    case 'ACTION_READ':
+      return Action.ACTION_READ;
+    case 1:
+    case 'ACTION_WRITE':
+      return Action.ACTION_WRITE;
+    case 2:
+    case 'ACTION_READ_REPLY':
+      return Action.ACTION_READ_REPLY;
+    case 3:
+    case 'ACTION_WRITE_REPLY':
+      return Action.ACTION_WRITE_REPLY;
+    case -1:
+    case 'UNRECOGNIZED':
+    default:
+      return Action.UNRECOGNIZED;
+  }
+}
+
+export function actionToJSON(object: Action): string {
+  switch (object) {
+    case Action.ACTION_READ:
+      return 'ACTION_READ';
+    case Action.ACTION_WRITE:
+      return 'ACTION_WRITE';
+    case Action.ACTION_READ_REPLY:
+      return 'ACTION_READ_REPLY';
+    case Action.ACTION_WRITE_REPLY:
+      return 'ACTION_WRITE_REPLY';
+    case Action.UNRECOGNIZED:
+    default:
+      return 'UNRECOGNIZED';
+  }
+}
+
+export enum PushType {
+  PUSH_TYPE_DIRECT = 0,
+  PUSH_TYPE_BROADCAST = 1,
+  UNRECOGNIZED = -1,
+}
+
+export function pushTypeFromJSON(object: any): PushType {
+  switch (object) {
+    case 0:
+    case 'PUSH_TYPE_DIRECT':
+      return PushType.PUSH_TYPE_DIRECT;
+    case 1:
+    case 'PUSH_TYPE_BROADCAST':
+      return PushType.PUSH_TYPE_BROADCAST;
+    case -1:
+    case 'UNRECOGNIZED':
+    default:
+      return PushType.UNRECOGNIZED;
+  }
+}
+
+export function pushTypeToJSON(object: PushType): string {
+  switch (object) {
+    case PushType.PUSH_TYPE_DIRECT:
+      return 'PUSH_TYPE_DIRECT';
+    case PushType.PUSH_TYPE_BROADCAST:
+      return 'PUSH_TYPE_BROADCAST';
+    case PushType.UNRECOGNIZED:
+    default:
+      return 'UNRECOGNIZED';
+  }
+}
+
+export enum GatewayType {
+  GATEWAY_TYPE_CLOCK_NODE = 0,
+  /** GATEWAY_TYPE_MERGE_LOG - ref merge log */
+  GATEWAY_TYPE_MERGE_LOG = 1,
+  /** GATEWAY_TYPE_NODE_INFO - heartbeat or node info */
+  GATEWAY_TYPE_NODE_INFO = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function gatewayTypeFromJSON(object: any): GatewayType {
+  switch (object) {
+    case 0:
+    case 'GATEWAY_TYPE_CLOCK_NODE':
+      return GatewayType.GATEWAY_TYPE_CLOCK_NODE;
+    case 1:
+    case 'GATEWAY_TYPE_MERGE_LOG':
+      return GatewayType.GATEWAY_TYPE_MERGE_LOG;
+    case 2:
+    case 'GATEWAY_TYPE_NODE_INFO':
+      return GatewayType.GATEWAY_TYPE_NODE_INFO;
+    case -1:
+    case 'UNRECOGNIZED':
+    default:
+      return GatewayType.UNRECOGNIZED;
+  }
+}
+
+export function gatewayTypeToJSON(object: GatewayType): string {
+  switch (object) {
+    case GatewayType.GATEWAY_TYPE_CLOCK_NODE:
+      return 'GATEWAY_TYPE_CLOCK_NODE';
+    case GatewayType.GATEWAY_TYPE_MERGE_LOG:
+      return 'GATEWAY_TYPE_MERGE_LOG';
+    case GatewayType.GATEWAY_TYPE_NODE_INFO:
+      return 'GATEWAY_TYPE_NODE_INFO';
+    case GatewayType.UNRECOGNIZED:
+    default:
+      return 'UNRECOGNIZED';
+  }
+}
+
 export interface ZMessage {
   id: Uint8Array;
   version: number;
   type: ZType;
-  action: ZAction;
-  identity: ZIdentity;
   publicKey: Uint8Array;
   data: Uint8Array;
   signature: Uint8Array;
   from: Uint8Array;
   to: Uint8Array;
-}
-
-export interface ZChat {
-  messageData: string;
-  clock: ClockInfo | undefined;
-}
-
-export interface MergeLog {
-  fromId: Uint8Array;
-  toId: Uint8Array;
-  startCount: string;
-  endCount: string;
-  sClock: Clock | undefined;
-  eClock: Clock | undefined;
-  mergeAt: string;
 }
 
 export interface Clock {
@@ -214,14 +280,76 @@ export interface Clock_ValuesEntry {
 
 export interface ClockInfo {
   clock: Clock | undefined;
-  /** id 为node id */
   id: Uint8Array;
   messageId: Uint8Array;
   count: string;
   createAt: string;
 }
 
-/** type = TYPE_CLOCK_NODE */
+export interface MergeLog {
+  fromId: Uint8Array;
+  toId: Uint8Array;
+  startCount: string;
+  endCount: string;
+  sClock: Clock | undefined;
+  eClock: Clock | undefined;
+  mergeAt: string;
+}
+
+/** zmessage type = Z_TYPE_CLOCK */
+export interface ZClock {
+  type: ClockType;
+  data: Uint8Array;
+}
+
+/** Server Clock Message */
+export interface EventTrigger {
+  clockInfo: ClockInfo | undefined;
+}
+
+export interface DiffReq {
+  to: Uint8Array;
+  fromClock: ClockInfo | undefined;
+}
+
+export interface DiffResp {
+  to: Uint8Array;
+  diffs: string[];
+  from: ClockInfo | undefined;
+}
+
+export interface ActiveSync {
+  to: Uint8Array;
+  diffs: string[];
+  latest: ClockInfo | undefined;
+}
+
+export interface Innermsg {
+  identity: Identity;
+  action: Action;
+  /** for vlc */
+  pushType: PushType;
+  message: ZMessage | undefined;
+  publicKeys: Uint8Array[];
+  /** for verifying or threshold signatures */
+  signatures: Uint8Array[];
+}
+
+export interface ZChat {
+  messageData: string;
+  clock: ClockInfo | undefined;
+}
+
+/**
+ * ZMessage.type = Z_TYPE_GATEWAY
+ * Gateway just only needs read api
+ */
+export interface ZGateway {
+  type: GatewayType;
+  data: Uint8Array;
+}
+
+/** ZGateway.type = GATEWAY_TYPE_CLOCK_NODE */
 export interface ClockNode {
   clock: Clock | undefined;
   id: Uint8Array;
@@ -231,175 +359,16 @@ export interface ClockNode {
   rawMessage: Uint8Array;
 }
 
+/** ZGateway.type = GATEWAY_TYPE_NODE_INFO */
 export interface NodeInfo {
   nodeIds: string[];
 }
-
-function createBaseZp2p(): Zp2p {
-  return {
-    version: 0,
-    type: 0,
-    action: 0,
-    pushType: 0,
-    message: undefined,
-    publicKey: new Uint8Array(0),
-    signature: new Uint8Array(0),
-  };
-}
-
-export const Zp2p = {
-  encode(message: Zp2p, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.version !== 0) {
-      writer.uint32(8).uint32(message.version);
-    }
-    if (message.type !== 0) {
-      writer.uint32(16).int32(message.type);
-    }
-    if (message.action !== 0) {
-      writer.uint32(24).int32(message.action);
-    }
-    if (message.pushType !== 0) {
-      writer.uint32(32).int32(message.pushType);
-    }
-    if (message.message !== undefined) {
-      ZMessage.encode(message.message, writer.uint32(42).fork()).ldelim();
-    }
-    if (message.publicKey.length !== 0) {
-      writer.uint32(50).bytes(message.publicKey);
-    }
-    if (message.signature.length !== 0) {
-      writer.uint32(58).bytes(message.signature);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): Zp2p {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseZp2p();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 8) {
-            break;
-          }
-
-          message.version = reader.uint32();
-          continue;
-        case 2:
-          if (tag !== 16) {
-            break;
-          }
-
-          message.type = reader.int32() as any;
-          continue;
-        case 3:
-          if (tag !== 24) {
-            break;
-          }
-
-          message.action = reader.int32() as any;
-          continue;
-        case 4:
-          if (tag !== 32) {
-            break;
-          }
-
-          message.pushType = reader.int32() as any;
-          continue;
-        case 5:
-          if (tag !== 42) {
-            break;
-          }
-
-          message.message = ZMessage.decode(reader, reader.uint32());
-          continue;
-        case 6:
-          if (tag !== 50) {
-            break;
-          }
-
-          message.publicKey = reader.bytes();
-          continue;
-        case 7:
-          if (tag !== 58) {
-            break;
-          }
-
-          message.signature = reader.bytes();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): Zp2p {
-    return {
-      version: isSet(object.version) ? globalThis.Number(object.version) : 0,
-      type: isSet(object.type) ? zIdentityFromJSON(object.type) : 0,
-      action: isSet(object.action) ? zActionFromJSON(object.action) : 0,
-      pushType: isSet(object.pushType) ? zPushTypeFromJSON(object.pushType) : 0,
-      message: isSet(object.message) ? ZMessage.fromJSON(object.message) : undefined,
-      publicKey: isSet(object.publicKey) ? bytesFromBase64(object.publicKey) : new Uint8Array(0),
-      signature: isSet(object.signature) ? bytesFromBase64(object.signature) : new Uint8Array(0),
-    };
-  },
-
-  toJSON(message: Zp2p): unknown {
-    const obj: any = {};
-    if (message.version !== 0) {
-      obj.version = Math.round(message.version);
-    }
-    if (message.type !== 0) {
-      obj.type = zIdentityToJSON(message.type);
-    }
-    if (message.action !== 0) {
-      obj.action = zActionToJSON(message.action);
-    }
-    if (message.pushType !== 0) {
-      obj.pushType = zPushTypeToJSON(message.pushType);
-    }
-    if (message.message !== undefined) {
-      obj.message = ZMessage.toJSON(message.message);
-    }
-    if (message.publicKey.length !== 0) {
-      obj.publicKey = base64FromBytes(message.publicKey);
-    }
-    if (message.signature.length !== 0) {
-      obj.signature = base64FromBytes(message.signature);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<Zp2p>, I>>(base?: I): Zp2p {
-    return Zp2p.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<Zp2p>, I>>(object: I): Zp2p {
-    const message = createBaseZp2p();
-    message.version = object.version ?? 0;
-    message.type = object.type ?? 0;
-    message.action = object.action ?? 0;
-    message.pushType = object.pushType ?? 0;
-    message.message =
-      object.message !== undefined && object.message !== null ? ZMessage.fromPartial(object.message) : undefined;
-    message.publicKey = object.publicKey ?? new Uint8Array(0);
-    message.signature = object.signature ?? new Uint8Array(0);
-    return message;
-  },
-};
 
 function createBaseZMessage(): ZMessage {
   return {
     id: new Uint8Array(0),
     version: 0,
     type: 0,
-    action: 0,
-    identity: 0,
     publicKey: new Uint8Array(0),
     data: new Uint8Array(0),
     signature: new Uint8Array(0),
@@ -419,26 +388,20 @@ export const ZMessage = {
     if (message.type !== 0) {
       writer.uint32(24).int32(message.type);
     }
-    if (message.action !== 0) {
-      writer.uint32(32).int32(message.action);
-    }
-    if (message.identity !== 0) {
-      writer.uint32(40).int32(message.identity);
-    }
     if (message.publicKey.length !== 0) {
-      writer.uint32(50).bytes(message.publicKey);
+      writer.uint32(34).bytes(message.publicKey);
     }
     if (message.data.length !== 0) {
-      writer.uint32(58).bytes(message.data);
+      writer.uint32(42).bytes(message.data);
     }
     if (message.signature.length !== 0) {
-      writer.uint32(66).bytes(message.signature);
+      writer.uint32(50).bytes(message.signature);
     }
     if (message.from.length !== 0) {
-      writer.uint32(74).bytes(message.from);
+      writer.uint32(58).bytes(message.from);
     }
     if (message.to.length !== 0) {
-      writer.uint32(82).bytes(message.to);
+      writer.uint32(66).bytes(message.to);
     }
     return writer;
   },
@@ -472,49 +435,35 @@ export const ZMessage = {
           message.type = reader.int32() as any;
           continue;
         case 4:
-          if (tag !== 32) {
+          if (tag !== 34) {
             break;
           }
 
-          message.action = reader.int32() as any;
+          message.publicKey = reader.bytes();
           continue;
         case 5:
-          if (tag !== 40) {
+          if (tag !== 42) {
             break;
           }
 
-          message.identity = reader.int32() as any;
+          message.data = reader.bytes();
           continue;
         case 6:
           if (tag !== 50) {
             break;
           }
 
-          message.publicKey = reader.bytes();
+          message.signature = reader.bytes();
           continue;
         case 7:
           if (tag !== 58) {
             break;
           }
 
-          message.data = reader.bytes();
+          message.from = reader.bytes();
           continue;
         case 8:
           if (tag !== 66) {
-            break;
-          }
-
-          message.signature = reader.bytes();
-          continue;
-        case 9:
-          if (tag !== 74) {
-            break;
-          }
-
-          message.from = reader.bytes();
-          continue;
-        case 10:
-          if (tag !== 82) {
             break;
           }
 
@@ -534,8 +483,6 @@ export const ZMessage = {
       id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
       version: isSet(object.version) ? globalThis.Number(object.version) : 0,
       type: isSet(object.type) ? zTypeFromJSON(object.type) : 0,
-      action: isSet(object.action) ? zActionFromJSON(object.action) : 0,
-      identity: isSet(object.identity) ? zIdentityFromJSON(object.identity) : 0,
       publicKey: isSet(object.publicKey) ? bytesFromBase64(object.publicKey) : new Uint8Array(0),
       data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
       signature: isSet(object.signature) ? bytesFromBase64(object.signature) : new Uint8Array(0),
@@ -554,12 +501,6 @@ export const ZMessage = {
     }
     if (message.type !== 0) {
       obj.type = zTypeToJSON(message.type);
-    }
-    if (message.action !== 0) {
-      obj.action = zActionToJSON(message.action);
-    }
-    if (message.identity !== 0) {
-      obj.identity = zIdentityToJSON(message.identity);
     }
     if (message.publicKey.length !== 0) {
       obj.publicKey = base64FromBytes(message.publicKey);
@@ -587,247 +528,11 @@ export const ZMessage = {
     message.id = object.id ?? new Uint8Array(0);
     message.version = object.version ?? 0;
     message.type = object.type ?? 0;
-    message.action = object.action ?? 0;
-    message.identity = object.identity ?? 0;
     message.publicKey = object.publicKey ?? new Uint8Array(0);
     message.data = object.data ?? new Uint8Array(0);
     message.signature = object.signature ?? new Uint8Array(0);
     message.from = object.from ?? new Uint8Array(0);
     message.to = object.to ?? new Uint8Array(0);
-    return message;
-  },
-};
-
-function createBaseZChat(): ZChat {
-  return { messageData: '', clock: undefined };
-}
-
-export const ZChat = {
-  encode(message: ZChat, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.messageData !== '') {
-      writer.uint32(10).string(message.messageData);
-    }
-    if (message.clock !== undefined) {
-      ClockInfo.encode(message.clock, writer.uint32(18).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): ZChat {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseZChat();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.messageData = reader.string();
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.clock = ClockInfo.decode(reader, reader.uint32());
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ZChat {
-    return {
-      messageData: isSet(object.messageData) ? globalThis.String(object.messageData) : '',
-      clock: isSet(object.clock) ? ClockInfo.fromJSON(object.clock) : undefined,
-    };
-  },
-
-  toJSON(message: ZChat): unknown {
-    const obj: any = {};
-    if (message.messageData !== '') {
-      obj.messageData = message.messageData;
-    }
-    if (message.clock !== undefined) {
-      obj.clock = ClockInfo.toJSON(message.clock);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ZChat>, I>>(base?: I): ZChat {
-    return ZChat.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ZChat>, I>>(object: I): ZChat {
-    const message = createBaseZChat();
-    message.messageData = object.messageData ?? '';
-    message.clock =
-      object.clock !== undefined && object.clock !== null ? ClockInfo.fromPartial(object.clock) : undefined;
-    return message;
-  },
-};
-
-function createBaseMergeLog(): MergeLog {
-  return {
-    fromId: new Uint8Array(0),
-    toId: new Uint8Array(0),
-    startCount: '0',
-    endCount: '0',
-    sClock: undefined,
-    eClock: undefined,
-    mergeAt: '0',
-  };
-}
-
-export const MergeLog = {
-  encode(message: MergeLog, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.fromId.length !== 0) {
-      writer.uint32(10).bytes(message.fromId);
-    }
-    if (message.toId.length !== 0) {
-      writer.uint32(18).bytes(message.toId);
-    }
-    if (message.startCount !== '0') {
-      writer.uint32(24).uint64(message.startCount);
-    }
-    if (message.endCount !== '0') {
-      writer.uint32(32).uint64(message.endCount);
-    }
-    if (message.sClock !== undefined) {
-      Clock.encode(message.sClock, writer.uint32(42).fork()).ldelim();
-    }
-    if (message.eClock !== undefined) {
-      Clock.encode(message.eClock, writer.uint32(50).fork()).ldelim();
-    }
-    if (message.mergeAt !== '0') {
-      writer.uint32(56).uint64(message.mergeAt);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MergeLog {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMergeLog();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.fromId = reader.bytes();
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.toId = reader.bytes();
-          continue;
-        case 3:
-          if (tag !== 24) {
-            break;
-          }
-
-          message.startCount = longToString(reader.uint64() as Long);
-          continue;
-        case 4:
-          if (tag !== 32) {
-            break;
-          }
-
-          message.endCount = longToString(reader.uint64() as Long);
-          continue;
-        case 5:
-          if (tag !== 42) {
-            break;
-          }
-
-          message.sClock = Clock.decode(reader, reader.uint32());
-          continue;
-        case 6:
-          if (tag !== 50) {
-            break;
-          }
-
-          message.eClock = Clock.decode(reader, reader.uint32());
-          continue;
-        case 7:
-          if (tag !== 56) {
-            break;
-          }
-
-          message.mergeAt = longToString(reader.uint64() as Long);
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MergeLog {
-    return {
-      fromId: isSet(object.fromId) ? bytesFromBase64(object.fromId) : new Uint8Array(0),
-      toId: isSet(object.toId) ? bytesFromBase64(object.toId) : new Uint8Array(0),
-      startCount: isSet(object.startCount) ? globalThis.String(object.startCount) : '0',
-      endCount: isSet(object.endCount) ? globalThis.String(object.endCount) : '0',
-      sClock: isSet(object.sClock) ? Clock.fromJSON(object.sClock) : undefined,
-      eClock: isSet(object.eClock) ? Clock.fromJSON(object.eClock) : undefined,
-      mergeAt: isSet(object.mergeAt) ? globalThis.String(object.mergeAt) : '0',
-    };
-  },
-
-  toJSON(message: MergeLog): unknown {
-    const obj: any = {};
-    if (message.fromId.length !== 0) {
-      obj.fromId = base64FromBytes(message.fromId);
-    }
-    if (message.toId.length !== 0) {
-      obj.toId = base64FromBytes(message.toId);
-    }
-    if (message.startCount !== '0') {
-      obj.startCount = message.startCount;
-    }
-    if (message.endCount !== '0') {
-      obj.endCount = message.endCount;
-    }
-    if (message.sClock !== undefined) {
-      obj.sClock = Clock.toJSON(message.sClock);
-    }
-    if (message.eClock !== undefined) {
-      obj.eClock = Clock.toJSON(message.eClock);
-    }
-    if (message.mergeAt !== '0') {
-      obj.mergeAt = message.mergeAt;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<MergeLog>, I>>(base?: I): MergeLog {
-    return MergeLog.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<MergeLog>, I>>(object: I): MergeLog {
-    const message = createBaseMergeLog();
-    message.fromId = object.fromId ?? new Uint8Array(0);
-    message.toId = object.toId ?? new Uint8Array(0);
-    message.startCount = object.startCount ?? '0';
-    message.endCount = object.endCount ?? '0';
-    message.sClock =
-      object.sClock !== undefined && object.sClock !== null ? Clock.fromPartial(object.sClock) : undefined;
-    message.eClock =
-      object.eClock !== undefined && object.eClock !== null ? Clock.fromPartial(object.eClock) : undefined;
-    message.mergeAt = object.mergeAt ?? '0';
     return message;
   },
 };
@@ -1099,6 +804,839 @@ export const ClockInfo = {
     message.messageId = object.messageId ?? new Uint8Array(0);
     message.count = object.count ?? '0';
     message.createAt = object.createAt ?? '0';
+    return message;
+  },
+};
+
+function createBaseMergeLog(): MergeLog {
+  return {
+    fromId: new Uint8Array(0),
+    toId: new Uint8Array(0),
+    startCount: '0',
+    endCount: '0',
+    sClock: undefined,
+    eClock: undefined,
+    mergeAt: '0',
+  };
+}
+
+export const MergeLog = {
+  encode(message: MergeLog, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.fromId.length !== 0) {
+      writer.uint32(10).bytes(message.fromId);
+    }
+    if (message.toId.length !== 0) {
+      writer.uint32(18).bytes(message.toId);
+    }
+    if (message.startCount !== '0') {
+      writer.uint32(24).uint64(message.startCount);
+    }
+    if (message.endCount !== '0') {
+      writer.uint32(32).uint64(message.endCount);
+    }
+    if (message.sClock !== undefined) {
+      Clock.encode(message.sClock, writer.uint32(42).fork()).ldelim();
+    }
+    if (message.eClock !== undefined) {
+      Clock.encode(message.eClock, writer.uint32(50).fork()).ldelim();
+    }
+    if (message.mergeAt !== '0') {
+      writer.uint32(56).uint64(message.mergeAt);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MergeLog {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMergeLog();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.fromId = reader.bytes();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.toId = reader.bytes();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.startCount = longToString(reader.uint64() as Long);
+          continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.endCount = longToString(reader.uint64() as Long);
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.sClock = Clock.decode(reader, reader.uint32());
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.eClock = Clock.decode(reader, reader.uint32());
+          continue;
+        case 7:
+          if (tag !== 56) {
+            break;
+          }
+
+          message.mergeAt = longToString(reader.uint64() as Long);
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MergeLog {
+    return {
+      fromId: isSet(object.fromId) ? bytesFromBase64(object.fromId) : new Uint8Array(0),
+      toId: isSet(object.toId) ? bytesFromBase64(object.toId) : new Uint8Array(0),
+      startCount: isSet(object.startCount) ? globalThis.String(object.startCount) : '0',
+      endCount: isSet(object.endCount) ? globalThis.String(object.endCount) : '0',
+      sClock: isSet(object.sClock) ? Clock.fromJSON(object.sClock) : undefined,
+      eClock: isSet(object.eClock) ? Clock.fromJSON(object.eClock) : undefined,
+      mergeAt: isSet(object.mergeAt) ? globalThis.String(object.mergeAt) : '0',
+    };
+  },
+
+  toJSON(message: MergeLog): unknown {
+    const obj: any = {};
+    if (message.fromId.length !== 0) {
+      obj.fromId = base64FromBytes(message.fromId);
+    }
+    if (message.toId.length !== 0) {
+      obj.toId = base64FromBytes(message.toId);
+    }
+    if (message.startCount !== '0') {
+      obj.startCount = message.startCount;
+    }
+    if (message.endCount !== '0') {
+      obj.endCount = message.endCount;
+    }
+    if (message.sClock !== undefined) {
+      obj.sClock = Clock.toJSON(message.sClock);
+    }
+    if (message.eClock !== undefined) {
+      obj.eClock = Clock.toJSON(message.eClock);
+    }
+    if (message.mergeAt !== '0') {
+      obj.mergeAt = message.mergeAt;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MergeLog>, I>>(base?: I): MergeLog {
+    return MergeLog.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MergeLog>, I>>(object: I): MergeLog {
+    const message = createBaseMergeLog();
+    message.fromId = object.fromId ?? new Uint8Array(0);
+    message.toId = object.toId ?? new Uint8Array(0);
+    message.startCount = object.startCount ?? '0';
+    message.endCount = object.endCount ?? '0';
+    message.sClock =
+      object.sClock !== undefined && object.sClock !== null ? Clock.fromPartial(object.sClock) : undefined;
+    message.eClock =
+      object.eClock !== undefined && object.eClock !== null ? Clock.fromPartial(object.eClock) : undefined;
+    message.mergeAt = object.mergeAt ?? '0';
+    return message;
+  },
+};
+
+function createBaseZClock(): ZClock {
+  return { type: 0, data: new Uint8Array(0) };
+}
+
+export const ZClock = {
+  encode(message: ZClock, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.type !== 0) {
+      writer.uint32(8).int32(message.type);
+    }
+    if (message.data.length !== 0) {
+      writer.uint32(18).bytes(message.data);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ZClock {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseZClock();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.type = reader.int32() as any;
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.data = reader.bytes();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ZClock {
+    return {
+      type: isSet(object.type) ? clockTypeFromJSON(object.type) : 0,
+      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
+    };
+  },
+
+  toJSON(message: ZClock): unknown {
+    const obj: any = {};
+    if (message.type !== 0) {
+      obj.type = clockTypeToJSON(message.type);
+    }
+    if (message.data.length !== 0) {
+      obj.data = base64FromBytes(message.data);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ZClock>, I>>(base?: I): ZClock {
+    return ZClock.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ZClock>, I>>(object: I): ZClock {
+    const message = createBaseZClock();
+    message.type = object.type ?? 0;
+    message.data = object.data ?? new Uint8Array(0);
+    return message;
+  },
+};
+
+function createBaseEventTrigger(): EventTrigger {
+  return { clockInfo: undefined };
+}
+
+export const EventTrigger = {
+  encode(message: EventTrigger, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.clockInfo !== undefined) {
+      ClockInfo.encode(message.clockInfo, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventTrigger {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEventTrigger();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.clockInfo = ClockInfo.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EventTrigger {
+    return { clockInfo: isSet(object.clockInfo) ? ClockInfo.fromJSON(object.clockInfo) : undefined };
+  },
+
+  toJSON(message: EventTrigger): unknown {
+    const obj: any = {};
+    if (message.clockInfo !== undefined) {
+      obj.clockInfo = ClockInfo.toJSON(message.clockInfo);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<EventTrigger>, I>>(base?: I): EventTrigger {
+    return EventTrigger.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<EventTrigger>, I>>(object: I): EventTrigger {
+    const message = createBaseEventTrigger();
+    message.clockInfo =
+      object.clockInfo !== undefined && object.clockInfo !== null ? ClockInfo.fromPartial(object.clockInfo) : undefined;
+    return message;
+  },
+};
+
+function createBaseDiffReq(): DiffReq {
+  return { to: new Uint8Array(0), fromClock: undefined };
+}
+
+export const DiffReq = {
+  encode(message: DiffReq, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.to.length !== 0) {
+      writer.uint32(10).bytes(message.to);
+    }
+    if (message.fromClock !== undefined) {
+      ClockInfo.encode(message.fromClock, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DiffReq {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDiffReq();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.to = reader.bytes();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.fromClock = ClockInfo.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DiffReq {
+    return {
+      to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
+      fromClock: isSet(object.fromClock) ? ClockInfo.fromJSON(object.fromClock) : undefined,
+    };
+  },
+
+  toJSON(message: DiffReq): unknown {
+    const obj: any = {};
+    if (message.to.length !== 0) {
+      obj.to = base64FromBytes(message.to);
+    }
+    if (message.fromClock !== undefined) {
+      obj.fromClock = ClockInfo.toJSON(message.fromClock);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DiffReq>, I>>(base?: I): DiffReq {
+    return DiffReq.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DiffReq>, I>>(object: I): DiffReq {
+    const message = createBaseDiffReq();
+    message.to = object.to ?? new Uint8Array(0);
+    message.fromClock =
+      object.fromClock !== undefined && object.fromClock !== null ? ClockInfo.fromPartial(object.fromClock) : undefined;
+    return message;
+  },
+};
+
+function createBaseDiffResp(): DiffResp {
+  return { to: new Uint8Array(0), diffs: [], from: undefined };
+}
+
+export const DiffResp = {
+  encode(message: DiffResp, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.to.length !== 0) {
+      writer.uint32(10).bytes(message.to);
+    }
+    for (const v of message.diffs) {
+      writer.uint32(18).string(v!);
+    }
+    if (message.from !== undefined) {
+      ClockInfo.encode(message.from, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DiffResp {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDiffResp();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.to = reader.bytes();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.diffs.push(reader.string());
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.from = ClockInfo.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DiffResp {
+    return {
+      to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
+      diffs: globalThis.Array.isArray(object?.diffs) ? object.diffs.map((e: any) => globalThis.String(e)) : [],
+      from: isSet(object.from) ? ClockInfo.fromJSON(object.from) : undefined,
+    };
+  },
+
+  toJSON(message: DiffResp): unknown {
+    const obj: any = {};
+    if (message.to.length !== 0) {
+      obj.to = base64FromBytes(message.to);
+    }
+    if (message.diffs?.length) {
+      obj.diffs = message.diffs;
+    }
+    if (message.from !== undefined) {
+      obj.from = ClockInfo.toJSON(message.from);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DiffResp>, I>>(base?: I): DiffResp {
+    return DiffResp.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DiffResp>, I>>(object: I): DiffResp {
+    const message = createBaseDiffResp();
+    message.to = object.to ?? new Uint8Array(0);
+    message.diffs = object.diffs?.map(e => e) || [];
+    message.from = object.from !== undefined && object.from !== null ? ClockInfo.fromPartial(object.from) : undefined;
+    return message;
+  },
+};
+
+function createBaseActiveSync(): ActiveSync {
+  return { to: new Uint8Array(0), diffs: [], latest: undefined };
+}
+
+export const ActiveSync = {
+  encode(message: ActiveSync, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.to.length !== 0) {
+      writer.uint32(10).bytes(message.to);
+    }
+    for (const v of message.diffs) {
+      writer.uint32(18).string(v!);
+    }
+    if (message.latest !== undefined) {
+      ClockInfo.encode(message.latest, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ActiveSync {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseActiveSync();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.to = reader.bytes();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.diffs.push(reader.string());
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.latest = ClockInfo.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ActiveSync {
+    return {
+      to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
+      diffs: globalThis.Array.isArray(object?.diffs) ? object.diffs.map((e: any) => globalThis.String(e)) : [],
+      latest: isSet(object.latest) ? ClockInfo.fromJSON(object.latest) : undefined,
+    };
+  },
+
+  toJSON(message: ActiveSync): unknown {
+    const obj: any = {};
+    if (message.to.length !== 0) {
+      obj.to = base64FromBytes(message.to);
+    }
+    if (message.diffs?.length) {
+      obj.diffs = message.diffs;
+    }
+    if (message.latest !== undefined) {
+      obj.latest = ClockInfo.toJSON(message.latest);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ActiveSync>, I>>(base?: I): ActiveSync {
+    return ActiveSync.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ActiveSync>, I>>(object: I): ActiveSync {
+    const message = createBaseActiveSync();
+    message.to = object.to ?? new Uint8Array(0);
+    message.diffs = object.diffs?.map(e => e) || [];
+    message.latest =
+      object.latest !== undefined && object.latest !== null ? ClockInfo.fromPartial(object.latest) : undefined;
+    return message;
+  },
+};
+
+function createBaseInnermsg(): Innermsg {
+  return { identity: 0, action: 0, pushType: 0, message: undefined, publicKeys: [], signatures: [] };
+}
+
+export const Innermsg = {
+  encode(message: Innermsg, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.identity !== 0) {
+      writer.uint32(8).int32(message.identity);
+    }
+    if (message.action !== 0) {
+      writer.uint32(16).int32(message.action);
+    }
+    if (message.pushType !== 0) {
+      writer.uint32(24).int32(message.pushType);
+    }
+    if (message.message !== undefined) {
+      ZMessage.encode(message.message, writer.uint32(34).fork()).ldelim();
+    }
+    for (const v of message.publicKeys) {
+      writer.uint32(42).bytes(v!);
+    }
+    for (const v of message.signatures) {
+      writer.uint32(50).bytes(v!);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Innermsg {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseInnermsg();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.identity = reader.int32() as any;
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.action = reader.int32() as any;
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.pushType = reader.int32() as any;
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.message = ZMessage.decode(reader, reader.uint32());
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.publicKeys.push(reader.bytes());
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.signatures.push(reader.bytes());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Innermsg {
+    return {
+      identity: isSet(object.identity) ? identityFromJSON(object.identity) : 0,
+      action: isSet(object.action) ? actionFromJSON(object.action) : 0,
+      pushType: isSet(object.pushType) ? pushTypeFromJSON(object.pushType) : 0,
+      message: isSet(object.message) ? ZMessage.fromJSON(object.message) : undefined,
+      publicKeys: globalThis.Array.isArray(object?.publicKeys)
+        ? object.publicKeys.map((e: any) => bytesFromBase64(e))
+        : [],
+      signatures: globalThis.Array.isArray(object?.signatures)
+        ? object.signatures.map((e: any) => bytesFromBase64(e))
+        : [],
+    };
+  },
+
+  toJSON(message: Innermsg): unknown {
+    const obj: any = {};
+    if (message.identity !== 0) {
+      obj.identity = identityToJSON(message.identity);
+    }
+    if (message.action !== 0) {
+      obj.action = actionToJSON(message.action);
+    }
+    if (message.pushType !== 0) {
+      obj.pushType = pushTypeToJSON(message.pushType);
+    }
+    if (message.message !== undefined) {
+      obj.message = ZMessage.toJSON(message.message);
+    }
+    if (message.publicKeys?.length) {
+      obj.publicKeys = message.publicKeys.map(e => base64FromBytes(e));
+    }
+    if (message.signatures?.length) {
+      obj.signatures = message.signatures.map(e => base64FromBytes(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Innermsg>, I>>(base?: I): Innermsg {
+    return Innermsg.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Innermsg>, I>>(object: I): Innermsg {
+    const message = createBaseInnermsg();
+    message.identity = object.identity ?? 0;
+    message.action = object.action ?? 0;
+    message.pushType = object.pushType ?? 0;
+    message.message =
+      object.message !== undefined && object.message !== null ? ZMessage.fromPartial(object.message) : undefined;
+    message.publicKeys = object.publicKeys?.map(e => e) || [];
+    message.signatures = object.signatures?.map(e => e) || [];
+    return message;
+  },
+};
+
+function createBaseZChat(): ZChat {
+  return { messageData: '', clock: undefined };
+}
+
+export const ZChat = {
+  encode(message: ZChat, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.messageData !== '') {
+      writer.uint32(10).string(message.messageData);
+    }
+    if (message.clock !== undefined) {
+      ClockInfo.encode(message.clock, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ZChat {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseZChat();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.messageData = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.clock = ClockInfo.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ZChat {
+    return {
+      messageData: isSet(object.messageData) ? globalThis.String(object.messageData) : '',
+      clock: isSet(object.clock) ? ClockInfo.fromJSON(object.clock) : undefined,
+    };
+  },
+
+  toJSON(message: ZChat): unknown {
+    const obj: any = {};
+    if (message.messageData !== '') {
+      obj.messageData = message.messageData;
+    }
+    if (message.clock !== undefined) {
+      obj.clock = ClockInfo.toJSON(message.clock);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ZChat>, I>>(base?: I): ZChat {
+    return ZChat.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ZChat>, I>>(object: I): ZChat {
+    const message = createBaseZChat();
+    message.messageData = object.messageData ?? '';
+    message.clock =
+      object.clock !== undefined && object.clock !== null ? ClockInfo.fromPartial(object.clock) : undefined;
+    return message;
+  },
+};
+
+function createBaseZGateway(): ZGateway {
+  return { type: 0, data: new Uint8Array(0) };
+}
+
+export const ZGateway = {
+  encode(message: ZGateway, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.type !== 0) {
+      writer.uint32(8).int32(message.type);
+    }
+    if (message.data.length !== 0) {
+      writer.uint32(18).bytes(message.data);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ZGateway {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseZGateway();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.type = reader.int32() as any;
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.data = reader.bytes();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ZGateway {
+    return {
+      type: isSet(object.type) ? gatewayTypeFromJSON(object.type) : 0,
+      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
+    };
+  },
+
+  toJSON(message: ZGateway): unknown {
+    const obj: any = {};
+    if (message.type !== 0) {
+      obj.type = gatewayTypeToJSON(message.type);
+    }
+    if (message.data.length !== 0) {
+      obj.data = base64FromBytes(message.data);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ZGateway>, I>>(base?: I): ZGateway {
+    return ZGateway.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ZGateway>, I>>(object: I): ZGateway {
+    const message = createBaseZGateway();
+    message.type = object.type ?? 0;
+    message.data = object.data ?? new Uint8Array(0);
     return message;
   },
 };

@@ -38,22 +38,27 @@ export class BackendChat {
   }
 
   async onMessage(message: ZMessage) {
-    console.log('onMessage', message);
-    const zChat = ZChat.decode(message.data);
-    const chatMessageBuffer = hexToU8a(zChat.messageData);
-    const chatMessage = ChatMessage.decode(chatMessageBuffer);
-    const from = u8aToString(chatMessage.from);
-    const to = u8aToString(chatMessage.to);
-    const key = messageStorageSortKey(from, to);
+    try {
+      console.log('onMessage', message);
+      const zChat = ZChat.decode(message.data);
+      console.log('message zChat', zChat);
+      const chatMessageBuffer = hexToU8a(zChat.messageData);
+      const chatMessage = ChatMessage.decode(chatMessageBuffer);
+      const from = u8aToString(chatMessage.from);
+      const to = u8aToString(chatMessage.to);
+      const key = messageStorageSortKey(from, to);
 
-    const textMessage = u8aToString(chatMessage.data);
-    const receiveMessage = {
-      from,
-      to: to,
-      message: textMessage,
-      sign: '',
-    };
-    await messagesStorage.addMessage(key, receiveMessage);
+      const textMessage = u8aToString(chatMessage.data);
+      const receiveMessage = {
+        from,
+        to: to,
+        message: textMessage,
+        sign: '',
+      };
+      await messagesStorage.addMessage(key, receiveMessage);
+    } catch (error) {
+      console.error('message decode error', error);
+    }
   }
 
   async disconnect() {
