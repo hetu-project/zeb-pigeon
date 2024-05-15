@@ -5,6 +5,7 @@ import useStorage from './useStorage';
 import messagesStorage from '../storages/messageStorage';
 import { useSessionList } from './session';
 import { messageStorageSortKey } from '../account';
+import accountInfoStorage, { AccountInfo } from '../storages/accountInfoStorage';
 
 export const useActiveAccount = (): Account | undefined => {
   const mainAccount = useStorage(keystoreStorage);
@@ -47,4 +48,15 @@ export const useMessageCount = () => {
     return allMessage.length;
   }, [allMessage.length]);
   return count;
+};
+
+export const useAccountInfoByAddress = (address: string): AccountInfo | undefined => {
+  const allAccount = useStorage(accountInfoStorage);
+
+  const account: AccountInfo | undefined = useMemo(() => {
+    if (!allAccount[address]) return undefined;
+    return allAccount[address];
+  }, [allAccount, address]);
+
+  return account;
 };
