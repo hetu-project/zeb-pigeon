@@ -22,6 +22,7 @@ import { MessageItem } from '@root/src/shared/storages/messageStorage';
 import MessageGraph from './MessageGraph';
 import { useMessageGraph } from '@root/src/shared/hooks/messages';
 import useSWR from 'swr';
+import NoData from '@root/src/shared/components/NoData';
 export interface MessageCardProps {
   position: 'left' | 'right';
   message: string;
@@ -160,18 +161,24 @@ export default function MessageList({ list = [] }: MessageListProps) {
     }
   }, [list.length]);
   return (
-    <div className="overflow-scroll max-h-full" ref={containerRef}>
-      <div className="flex flex-col gap-3 py-4 justify-end">
-        {list.map((item, index) => {
-          return (
-            <MessageCard
-              key={index}
-              position={activeAccount?.address !== item?.from ? 'left' : 'right'}
-              message={item?.message}
-            />
-          );
-        })}
-      </div>
+    <div className={clsx('overflow-scroll max-h-full', list.length > 0 ? '' : 'h-full')} ref={containerRef}>
+      {list.length > 0 ? (
+        <div className="flex flex-col gap-3 py-4 justify-end">
+          {list.map((item, index) => {
+            return (
+              <MessageCard
+                key={index}
+                position={activeAccount?.address !== item?.from ? 'left' : 'right'}
+                message={item?.message}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <div className=" w-full h-full flex items-center justify-center">
+          <NoData />
+        </div>
+      )}
     </div>
   );
 }

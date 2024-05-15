@@ -32,7 +32,7 @@ export function MessageCard({
       </div>
       <div className="py-4 pr-4 overflow-hidden">
         <div className="zm-message-title text-xs truncate">{name || contact?.name || to || ''}</div>
-        <div className=" zm-message-description truncate text-xs">{message || latestMessage?.message}</div>
+        <div className=" zm-message-description truncate text-xs h-4">{message || latestMessage?.message}</div>
       </div>
     </Link>
   );
