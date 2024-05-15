@@ -1,6 +1,6 @@
 import { TicketIcon, ShareIcon, PaperAirplaneIcon, StarIcon, ChartBarSquareIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import {
   Button,
   Menu,
@@ -14,19 +14,36 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  SkeletonCircle,
 } from '@chakra-ui/react';
 // import CausalityGraphsSvg from '@assets/img/chat/CausalityGraphs.svg';
 import { useActiveAccount } from '@root/src/shared/hooks/accounts';
 import { MessageItem } from '@root/src/shared/storages/messageStorage';
 import MessageGraph from './MessageGraph';
+import { useMessageGraph } from '@root/src/shared/hooks/messages';
+import useSWR from 'swr';
 export interface MessageCardProps {
   position: 'left' | 'right';
   message: string;
 }
 
+const fetcher = (...args) => {
+  console.log('fetcher graph', args);
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(1);
+    }, 2000);
+  });
+};
+
 export function MessageCard({ position = 'left', message }: MessageCardProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [showGraphs, setShowGraphs] = useState(false);
+  const graph = useMessageGraph(message);
+  const { data, isLoading } = useSWR(!graph && showGraphs ? '/api' : null, fetcher);
+  const result = useMemo(() => {
+    return graph || data;
+  }, [data, graph]);
   return (
     <div
       className={clsx('flex items-center rounded-xl relative', {
@@ -95,7 +112,13 @@ export function MessageCard({ position = 'left', message }: MessageCardProps) {
           <ModalBody className="">
             <div className="flex items-center justify-center">
               {/* <img className="w-[738px] h-[646px] object-contain" src={CausalityGraphsSvg} alt="" /> */}
-              <MessageGraph />
+              {isLoading ? (
+                <div className="text-white">
+                  <SkeletonCircle startColor="#312F2F" endColor="#605E5C" height={'500px'} width={'500px'} />
+                </div>
+              ) : (
+                <>{result ? <MessageGraph /> : <MessageGraph />}</>
+              )}
             </div>
           </ModalBody>
           <ModalFooter>

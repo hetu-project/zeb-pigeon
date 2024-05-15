@@ -44,15 +44,15 @@ const storage = createStorage<MessageGraphMap>(
 
 const messagesGraphStorage: MessageGraphMapStorage = {
   ...storage,
-  addGraph: async (address, value) => {
+  addGraph: async (messageId, value) => {
     const graphMap = await storage.get();
-    graphMap[address] = value;
+    graphMap[messageId] = value;
     await storage.set(graphMap);
     return true;
   },
-  removeGraph: async address => {
+  removeGraph: async messageId => {
     const graphMap = await storage.get();
-    delete graphMap[address];
+    delete graphMap[messageId];
     await storage.set(graphMap);
     return true;
   },

@@ -53,7 +53,6 @@ export interface ChatApiOptions {
 }
 export default class ChatApi {
   provider: WsProvider;
-  private mid = 0;
   constructor(options?: ChatApiOptions) {
     this.provider = options.provider;
   }
@@ -73,24 +72,6 @@ export default class ChatApi {
         });
     });
   }
-
-  public async bootstrapGetNode() {
-    this.mid++;
-    console.log('bootstrapGetNode', this.mid);
-    this.provider.send<number>('bootstrap_getNode', {
-      address: '',
-      sign: '',
-    });
-  }
-  public async nodeConnectNode(address: string) {
-    this.provider.send<number>('node_connectNode', [
-      {
-        address: address,
-        sign: '',
-      },
-    ]);
-  }
-
   public async accountSendMessage(
     from: string,
     to: string,
@@ -158,17 +139,8 @@ export default class ChatApi {
     // console.log('messageCreated', originData);
     // this.provider.sendMessage(originDataBuffer);
   }
-
-  public async accountPullMessage() {
-    this.provider.send<number>('account_pullMessage', [
-      {
-        address: '',
-        sign: '',
-      },
-    ]);
-  }
   public async accountSubscribeMessage(cb: ProviderInterfaceCallback) {
-    this.provider.addEventListener('', 'account_receiveMessage', {}, cb);
+    this.provider.addEventListener('account_receiveMessage', cb);
   }
   public async onError(cb: () => void) {
     this.provider.eventemitter.addListener('error', cb);
