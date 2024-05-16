@@ -4,7 +4,7 @@ import type { To } from 'react-router-dom';
 // import { Trans } from '@lingui/macro';
 import { ChatBubbleLeftEllipsisIcon, Cog6ToothIcon } from '@heroicons/react/24/solid';
 import ChatNavIcon from '@assets/img/chat/NavIcon.png';
-import LogoIcon from '@assets/img/Vote.svg';
+// import LogoIcon from '@assets/img/Vote.svg';
 import clsx from 'clsx';
 interface NavBarItemProps {
   title: string;
@@ -79,9 +79,7 @@ export const ChatBarItem: FC<NavBarItemProps> = ({
 export default function NavBar() {
   return (
     <div className="h-full flex flex-col items-center zm-bg-card">
-      <div className="p-2 mt-4">
-        <img className="w-8 h-8" src={LogoIcon} alt="" />
-      </div>
+      <div className="p-2 mt-4">{/* <img className="w-8 h-8" src={LogoIcon} alt="" /> */}</div>
       <div className="mt-20 flex-grow flex flex-col items-center">
         <ChatBarItem title="Chat" to={'/chat'} icon={<ChatBubbleLeftEllipsisIcon className="h-4 w-4" />} />
       </div>
