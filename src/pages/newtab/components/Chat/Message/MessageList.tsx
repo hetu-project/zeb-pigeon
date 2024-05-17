@@ -19,29 +19,23 @@ import {
 // import CausalityGraphsSvg from '@assets/img/chat/CausalityGraphs.svg';
 import { useActiveAccount } from '@root/src/shared/hooks/accounts';
 import { MessageItem } from '@root/src/shared/storages/messageStorage';
-import MessageGraph from './MessageGraph';
+// import MessageGraph from './MessageGraph';
 import { useMessageGraph } from '@root/src/shared/hooks/messages';
 import useSWR from 'swr';
 import NoData from '@root/src/shared/components/NoData';
+import { rpcMessageFetcher } from '@root/src/shared/gateway/rpc';
+import NodeGraph from './NodeGraph';
 export interface MessageCardProps {
   position: 'left' | 'right';
   message: string;
+  messageId: string;
 }
 
-const fetcher = (...args) => {
-  console.log('fetcher graph', args);
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(1);
-    }, 2000);
-  });
-};
-
-export function MessageCard({ position = 'left', message }: MessageCardProps) {
+export function MessageCard({ position = 'left', message, messageId }: MessageCardProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [showGraphs, setShowGraphs] = useState(false);
   const graph = useMessageGraph(message);
-  const { data, isLoading } = useSWR(!graph && showGraphs ? '/api' : null, fetcher);
+  const { data, isLoading } = useSWR(!graph && showGraphs ? `/api/${messageId}` : null, rpcMessageFetcher);
   const result = useMemo(() => {
     return graph || data;
   }, [data, graph]);
@@ -118,7 +112,10 @@ export function MessageCard({ position = 'left', message }: MessageCardProps) {
                   <SkeletonCircle startColor="#312F2F" endColor="#605E5C" height={'500px'} width={'500px'} />
                 </div>
               ) : (
-                <>{result ? <MessageGraph /> : <MessageGraph />}</>
+                <>
+                  {/* {result ? <MessageGraph graphData={data} /> : <MessageGraph  graphData={data}/>} */}
+                  {result ? <NodeGraph /> : <NodeGraph />}
+                </>
               )}
             </div>
           </ModalBody>
@@ -170,6 +167,7 @@ export default function MessageList({ list = [] }: MessageListProps) {
                 key={index}
                 position={activeAccount?.address !== item?.from ? 'left' : 'right'}
                 message={item?.message}
+                messageId={item?.message}
               />
             );
           })}

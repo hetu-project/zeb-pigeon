@@ -217,6 +217,39 @@ export function pushTypeToJSON(object: PushType): string {
   }
 }
 
+export enum QueryMethod {
+  QUERY_BY_MSGID = 0,
+  QUERY_BY_TABLE_KEYID = 1,
+  UNRECOGNIZED = -1,
+}
+
+export function queryMethodFromJSON(object: any): QueryMethod {
+  switch (object) {
+    case 0:
+    case 'QUERY_BY_MSGID':
+      return QueryMethod.QUERY_BY_MSGID;
+    case 1:
+    case 'QUERY_BY_TABLE_KEYID':
+      return QueryMethod.QUERY_BY_TABLE_KEYID;
+    case -1:
+    case 'UNRECOGNIZED':
+    default:
+      return QueryMethod.UNRECOGNIZED;
+  }
+}
+
+export function queryMethodToJSON(object: QueryMethod): string {
+  switch (object) {
+    case QueryMethod.QUERY_BY_MSGID:
+      return 'QUERY_BY_MSGID';
+    case QueryMethod.QUERY_BY_TABLE_KEYID:
+      return 'QUERY_BY_TABLE_KEYID';
+    case QueryMethod.UNRECOGNIZED:
+    default:
+      return 'UNRECOGNIZED';
+  }
+}
+
 export enum GatewayType {
   GATEWAY_TYPE_CLOCK_NODE = 0,
   /** GATEWAY_TYPE_MERGE_LOG - ref merge log */
@@ -346,6 +379,7 @@ export interface ZChat {
  */
 export interface ZGateway {
   type: GatewayType;
+  method: QueryMethod;
   data: Uint8Array;
 }
 
@@ -362,6 +396,29 @@ export interface ClockNode {
 /** ZGateway.type = GATEWAY_TYPE_NODE_INFO */
 export interface NodeInfo {
   nodeIds: string[];
+}
+
+export interface NodeData {
+  publicKey: Uint8Array;
+  websocketPort: number;
+  jsonRpcPort: number;
+  domain: string;
+}
+
+export interface QueryResponse {
+  success: boolean;
+  reason: string;
+  data: Uint8Array;
+}
+
+/** ZGateway.method = QUERY_BY_MSGID */
+export interface QueryByMsgID {
+  msgId: string;
+}
+
+/** ZGateway.method = QUERY_BY_TABLE_KEYID */
+export interface QueryByTableKeyID {
+  lastPos: string;
 }
 
 function createBaseZMessage(): ZMessage {
@@ -1568,7 +1625,7 @@ export const ZChat = {
 };
 
 function createBaseZGateway(): ZGateway {
-  return { type: 0, data: new Uint8Array(0) };
+  return { type: 0, method: 0, data: new Uint8Array(0) };
 }
 
 export const ZGateway = {
@@ -1576,8 +1633,11 @@ export const ZGateway = {
     if (message.type !== 0) {
       writer.uint32(8).int32(message.type);
     }
+    if (message.method !== 0) {
+      writer.uint32(16).int32(message.method);
+    }
     if (message.data.length !== 0) {
-      writer.uint32(18).bytes(message.data);
+      writer.uint32(26).bytes(message.data);
     }
     return writer;
   },
@@ -1597,7 +1657,14 @@ export const ZGateway = {
           message.type = reader.int32() as any;
           continue;
         case 2:
-          if (tag !== 18) {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.method = reader.int32() as any;
+          continue;
+        case 3:
+          if (tag !== 26) {
             break;
           }
 
@@ -1615,6 +1682,7 @@ export const ZGateway = {
   fromJSON(object: any): ZGateway {
     return {
       type: isSet(object.type) ? gatewayTypeFromJSON(object.type) : 0,
+      method: isSet(object.method) ? queryMethodFromJSON(object.method) : 0,
       data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
     };
   },
@@ -1623,6 +1691,9 @@ export const ZGateway = {
     const obj: any = {};
     if (message.type !== 0) {
       obj.type = gatewayTypeToJSON(message.type);
+    }
+    if (message.method !== 0) {
+      obj.method = queryMethodToJSON(message.method);
     }
     if (message.data.length !== 0) {
       obj.data = base64FromBytes(message.data);
@@ -1636,6 +1707,7 @@ export const ZGateway = {
   fromPartial<I extends Exact<DeepPartial<ZGateway>, I>>(object: I): ZGateway {
     const message = createBaseZGateway();
     message.type = object.type ?? 0;
+    message.method = object.method ?? 0;
     message.data = object.data ?? new Uint8Array(0);
     return message;
   },
@@ -1837,6 +1909,313 @@ export const NodeInfo = {
   fromPartial<I extends Exact<DeepPartial<NodeInfo>, I>>(object: I): NodeInfo {
     const message = createBaseNodeInfo();
     message.nodeIds = object.nodeIds?.map(e => e) || [];
+    return message;
+  },
+};
+
+function createBaseNodeData(): NodeData {
+  return { publicKey: new Uint8Array(0), websocketPort: 0, jsonRpcPort: 0, domain: '' };
+}
+
+export const NodeData = {
+  encode(message: NodeData, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.publicKey.length !== 0) {
+      writer.uint32(10).bytes(message.publicKey);
+    }
+    if (message.websocketPort !== 0) {
+      writer.uint32(16).uint32(message.websocketPort);
+    }
+    if (message.jsonRpcPort !== 0) {
+      writer.uint32(24).uint32(message.jsonRpcPort);
+    }
+    if (message.domain !== '') {
+      writer.uint32(34).string(message.domain);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): NodeData {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNodeData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.publicKey = reader.bytes();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.websocketPort = reader.uint32();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.jsonRpcPort = reader.uint32();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.domain = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): NodeData {
+    return {
+      publicKey: isSet(object.publicKey) ? bytesFromBase64(object.publicKey) : new Uint8Array(0),
+      websocketPort: isSet(object.websocketPort) ? globalThis.Number(object.websocketPort) : 0,
+      jsonRpcPort: isSet(object.jsonRpcPort) ? globalThis.Number(object.jsonRpcPort) : 0,
+      domain: isSet(object.domain) ? globalThis.String(object.domain) : '',
+    };
+  },
+
+  toJSON(message: NodeData): unknown {
+    const obj: any = {};
+    if (message.publicKey.length !== 0) {
+      obj.publicKey = base64FromBytes(message.publicKey);
+    }
+    if (message.websocketPort !== 0) {
+      obj.websocketPort = Math.round(message.websocketPort);
+    }
+    if (message.jsonRpcPort !== 0) {
+      obj.jsonRpcPort = Math.round(message.jsonRpcPort);
+    }
+    if (message.domain !== '') {
+      obj.domain = message.domain;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<NodeData>, I>>(base?: I): NodeData {
+    return NodeData.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<NodeData>, I>>(object: I): NodeData {
+    const message = createBaseNodeData();
+    message.publicKey = object.publicKey ?? new Uint8Array(0);
+    message.websocketPort = object.websocketPort ?? 0;
+    message.jsonRpcPort = object.jsonRpcPort ?? 0;
+    message.domain = object.domain ?? '';
+    return message;
+  },
+};
+
+function createBaseQueryResponse(): QueryResponse {
+  return { success: false, reason: '', data: new Uint8Array(0) };
+}
+
+export const QueryResponse = {
+  encode(message: QueryResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.success !== false) {
+      writer.uint32(8).bool(message.success);
+    }
+    if (message.reason !== '') {
+      writer.uint32(18).string(message.reason);
+    }
+    if (message.data.length !== 0) {
+      writer.uint32(26).bytes(message.data);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.success = reader.bool();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.reason = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.data = reader.bytes();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryResponse {
+    return {
+      success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
+      reason: isSet(object.reason) ? globalThis.String(object.reason) : '',
+      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
+    };
+  },
+
+  toJSON(message: QueryResponse): unknown {
+    const obj: any = {};
+    if (message.success !== false) {
+      obj.success = message.success;
+    }
+    if (message.reason !== '') {
+      obj.reason = message.reason;
+    }
+    if (message.data.length !== 0) {
+      obj.data = base64FromBytes(message.data);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<QueryResponse>, I>>(base?: I): QueryResponse {
+    return QueryResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<QueryResponse>, I>>(object: I): QueryResponse {
+    const message = createBaseQueryResponse();
+    message.success = object.success ?? false;
+    message.reason = object.reason ?? '';
+    message.data = object.data ?? new Uint8Array(0);
+    return message;
+  },
+};
+
+function createBaseQueryByMsgID(): QueryByMsgID {
+  return { msgId: '' };
+}
+
+export const QueryByMsgID = {
+  encode(message: QueryByMsgID, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.msgId !== '') {
+      writer.uint32(10).string(message.msgId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryByMsgID {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryByMsgID();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.msgId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryByMsgID {
+    return { msgId: isSet(object.msgId) ? globalThis.String(object.msgId) : '' };
+  },
+
+  toJSON(message: QueryByMsgID): unknown {
+    const obj: any = {};
+    if (message.msgId !== '') {
+      obj.msgId = message.msgId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<QueryByMsgID>, I>>(base?: I): QueryByMsgID {
+    return QueryByMsgID.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<QueryByMsgID>, I>>(object: I): QueryByMsgID {
+    const message = createBaseQueryByMsgID();
+    message.msgId = object.msgId ?? '';
+    return message;
+  },
+};
+
+function createBaseQueryByTableKeyID(): QueryByTableKeyID {
+  return { lastPos: '0' };
+}
+
+export const QueryByTableKeyID = {
+  encode(message: QueryByTableKeyID, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.lastPos !== '0') {
+      writer.uint32(8).uint64(message.lastPos);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryByTableKeyID {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryByTableKeyID();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.lastPos = longToString(reader.uint64() as Long);
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryByTableKeyID {
+    return { lastPos: isSet(object.lastPos) ? globalThis.String(object.lastPos) : '0' };
+  },
+
+  toJSON(message: QueryByTableKeyID): unknown {
+    const obj: any = {};
+    if (message.lastPos !== '0') {
+      obj.lastPos = message.lastPos;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<QueryByTableKeyID>, I>>(base?: I): QueryByTableKeyID {
+    return QueryByTableKeyID.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<QueryByTableKeyID>, I>>(object: I): QueryByTableKeyID {
+    const message = createBaseQueryByTableKeyID();
+    message.lastPos = object.lastPos ?? '0';
     return message;
   },
 };

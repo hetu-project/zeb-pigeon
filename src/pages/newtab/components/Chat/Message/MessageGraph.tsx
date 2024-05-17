@@ -523,7 +523,11 @@ const data = {
     },
   ],
 };
-export default function MessageGraph() {
+
+export interface MessageGraphProps {
+  graphData: unknown;
+}
+export default function MessageGraph({ graphData }: MessageGraphProps) {
   const graphRef = useRef();
   const [, setGraphInstance] = useState(null);
   useEffect(() => {
@@ -565,7 +569,7 @@ export default function MessageGraph() {
           ],
         },
       });
-      instance.data(data);
+      instance.data(graphData || data);
       instance.render();
       setGraphInstance(instance);
       return () => {
@@ -574,7 +578,7 @@ export default function MessageGraph() {
         }
       };
     }
-  }, []);
+  }, [graphData]);
   return (
     <>
       {/* <img className="w-[738px] h-[646px] object-contain" src={CausalityGraphsSvg} alt="" /> */}
