@@ -1,4 +1,4 @@
-import { ChatCommandFactory } from '@root/src/pages/background/command/chat';
+import { ChatCommandFactory } from '@root/src/shared/command/chat';
 import activeNetworkStorage from '../storages/activeNetworkStorage';
 import networkStorage from '../storages/networkStorage';
 
@@ -11,5 +11,9 @@ export default class BackendClient {
     });
     if (!network) return;
     await chrome.runtime.sendMessage(ChatCommandFactory.changeEndpoint(network.url));
+  }
+
+  static async switchAccount(account: string) {
+    await chrome.runtime.sendMessage(ChatCommandFactory.changeAccount(account));
   }
 }

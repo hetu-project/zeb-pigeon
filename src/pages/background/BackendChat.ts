@@ -2,6 +2,7 @@ import { ChatMessage } from '@root/src/proto/ChatMessage';
 import { ZChat, ZMessage } from '@root/src/proto/ZMsg';
 import { messageStorageSortKey } from '@root/src/shared/account';
 import WsProvider from '@root/src/shared/client/provider/WsProvider';
+import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
 import messagesStorage from '@root/src/shared/storages/messageStorage';
 import { hexToU8a, u8aToString } from '@root/src/shared/utils';
 import ChatApi from '@src/shared/client/ChatApi';
@@ -10,19 +11,24 @@ export class BackendChat {
   isDisconnect: boolean;
   chatApi: ChatApi;
   endpoint: string;
-  constructor() {}
+  seedRpc: string;
+  constructor() {
+    this.chatApi = new ChatApi();
+  }
 
-  changeEndPoint(endpoint: string) {
-    if (this.chatApi) {
+  changeEndPoint(endpoint: string, seedRpc?: string) {
+    if (this.chatApi?.provider) {
       this.chatApi.provider.disconnect();
     }
     this.endpoint = endpoint;
     const wsProvider = new WsProvider(endpoint);
     this.chatApi = new ChatApi({
       provider: wsProvider,
+      seedRpc: seedRpc || this.seedRpc,
     });
     this.chatApi.accountSubscribeMessage(this.onMessage as never);
     this.chatApi.onError(this.onError);
+    return this.chatApi.isReady;
   }
 
   sendMessage(from: string, to: string, message: string, fromNode: string, toNode: string, signature?: Uint8Array) {
@@ -37,6 +43,16 @@ export class BackendChat {
     console.log('BackendChat', this.chatApi, data);
     this.chatApi.accountSendMessage(from, to, message, fromNode, toNode, signature);
   }
+
+  changeAccount = async (address: string) => {
+    if (!address) return;
+    await keystoreStorage.set(address);
+    const data = await this.chatApi.getEndpoint(address);
+    const url = new URL(data.wsAddr);
+    const wsUrl = `${data.wsAddr}/ws${url.port}`;
+    await this.changeEndPoint(wsUrl);
+    this.chatApi.provider.websocket.send(hexToU8a(address));
+  };
 
   async onMessage(message: ZMessage) {
     try {

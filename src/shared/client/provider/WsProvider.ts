@@ -98,6 +98,7 @@ export default class WsProvider {
         data: new Uint8Array(buffer),
       });
 
+      console.log('onSocketMessage', buffer);
       this.eventemitter.emit('account_receiveMessage', decoded);
     });
 

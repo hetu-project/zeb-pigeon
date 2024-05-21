@@ -29,4 +29,12 @@ export class ChatCommandFactory {
       },
     };
   }
+  static changeAccount(address: string) {
+    return {
+      type: ChatCommand.ChatChangeAccount,
+      data: {
+        address,
+      },
+    };
+  }
 }

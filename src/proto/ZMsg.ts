@@ -313,7 +313,8 @@ export interface Clock_ValuesEntry {
 
 export interface ClockInfo {
   clock: Clock | undefined;
-  id: Uint8Array;
+  nodeId: Uint8Array;
+  clockHash: Uint8Array;
   messageId: Uint8Array;
   count: string;
   createAt: string;
@@ -747,7 +748,14 @@ export const Clock_ValuesEntry = {
 };
 
 function createBaseClockInfo(): ClockInfo {
-  return { clock: undefined, id: new Uint8Array(0), messageId: new Uint8Array(0), count: '0', createAt: '0' };
+  return {
+    clock: undefined,
+    nodeId: new Uint8Array(0),
+    clockHash: new Uint8Array(0),
+    messageId: new Uint8Array(0),
+    count: '0',
+    createAt: '0',
+  };
 }
 
 export const ClockInfo = {
@@ -755,17 +763,20 @@ export const ClockInfo = {
     if (message.clock !== undefined) {
       Clock.encode(message.clock, writer.uint32(10).fork()).ldelim();
     }
-    if (message.id.length !== 0) {
-      writer.uint32(18).bytes(message.id);
+    if (message.nodeId.length !== 0) {
+      writer.uint32(18).bytes(message.nodeId);
+    }
+    if (message.clockHash.length !== 0) {
+      writer.uint32(26).bytes(message.clockHash);
     }
     if (message.messageId.length !== 0) {
-      writer.uint32(26).bytes(message.messageId);
+      writer.uint32(34).bytes(message.messageId);
     }
     if (message.count !== '0') {
-      writer.uint32(32).uint64(message.count);
+      writer.uint32(40).uint64(message.count);
     }
     if (message.createAt !== '0') {
-      writer.uint32(40).uint64(message.createAt);
+      writer.uint32(48).uint64(message.createAt);
     }
     return writer;
   },
@@ -789,24 +800,31 @@ export const ClockInfo = {
             break;
           }
 
-          message.id = reader.bytes();
+          message.nodeId = reader.bytes();
           continue;
         case 3:
           if (tag !== 26) {
             break;
           }
 
-          message.messageId = reader.bytes();
+          message.clockHash = reader.bytes();
           continue;
         case 4:
-          if (tag !== 32) {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.messageId = reader.bytes();
+          continue;
+        case 5:
+          if (tag !== 40) {
             break;
           }
 
           message.count = longToString(reader.uint64() as Long);
           continue;
-        case 5:
-          if (tag !== 40) {
+        case 6:
+          if (tag !== 48) {
             break;
           }
 
@@ -824,7 +842,8 @@ export const ClockInfo = {
   fromJSON(object: any): ClockInfo {
     return {
       clock: isSet(object.clock) ? Clock.fromJSON(object.clock) : undefined,
-      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
+      nodeId: isSet(object.nodeId) ? bytesFromBase64(object.nodeId) : new Uint8Array(0),
+      clockHash: isSet(object.clockHash) ? bytesFromBase64(object.clockHash) : new Uint8Array(0),
       messageId: isSet(object.messageId) ? bytesFromBase64(object.messageId) : new Uint8Array(0),
       count: isSet(object.count) ? globalThis.String(object.count) : '0',
       createAt: isSet(object.createAt) ? globalThis.String(object.createAt) : '0',
@@ -836,8 +855,11 @@ export const ClockInfo = {
     if (message.clock !== undefined) {
       obj.clock = Clock.toJSON(message.clock);
     }
-    if (message.id.length !== 0) {
-      obj.id = base64FromBytes(message.id);
+    if (message.nodeId.length !== 0) {
+      obj.nodeId = base64FromBytes(message.nodeId);
+    }
+    if (message.clockHash.length !== 0) {
+      obj.clockHash = base64FromBytes(message.clockHash);
     }
     if (message.messageId.length !== 0) {
       obj.messageId = base64FromBytes(message.messageId);
@@ -857,7 +879,8 @@ export const ClockInfo = {
   fromPartial<I extends Exact<DeepPartial<ClockInfo>, I>>(object: I): ClockInfo {
     const message = createBaseClockInfo();
     message.clock = object.clock !== undefined && object.clock !== null ? Clock.fromPartial(object.clock) : undefined;
-    message.id = object.id ?? new Uint8Array(0);
+    message.nodeId = object.nodeId ?? new Uint8Array(0);
+    message.clockHash = object.clockHash ?? new Uint8Array(0);
     message.messageId = object.messageId ?? new Uint8Array(0);
     message.count = object.count ?? '0';
     message.createAt = object.createAt ?? '0';

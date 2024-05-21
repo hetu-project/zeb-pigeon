@@ -5,6 +5,7 @@ import { BackendChat } from './BackendChat';
 import { ChatCommand } from '@root/src/shared/command/types';
 import activeNetworkStorage from '@root/src/shared/storages/activeNetworkStorage';
 import networkStorage, { NetworkConfig } from '@root/src/shared/storages/networkStorage';
+import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
 reloadOnUpdate('pages/background');
 
 /**
@@ -26,6 +27,11 @@ chrome.runtime.onMessage.addListener(request => {
     case ChatCommand.ChatSendMessage: {
       const { from, to, message, fromNode, toNode, signature } = request.data || {};
       api.sendMessage(from, to, message, fromNode, toNode, signature);
+      break;
+    }
+    case ChatCommand.ChatChangeAccount: {
+      const { address } = request.data || {};
+      api.changeAccount(address);
       break;
     }
     default:
@@ -63,7 +69,13 @@ async function init() {
   const activeNetwork: NetworkConfig | undefined = allNetworks?.find(item => {
     return item.name === network;
   });
+  api.seedRpc = 'http://127.0.0.1:12345/rpc12345';
+  console.log(activeNetwork);
 
-  api.changeEndPoint(activeNetwork?.url);
+  // api.changeEndPoint(activeNetwork?.url);
+  const account = await keystoreStorage.get();
+  if (account) {
+    await api.changeAccount(account);
+  }
 }
 init();

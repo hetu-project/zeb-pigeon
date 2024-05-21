@@ -13,6 +13,7 @@ import { Mnemonic } from '@src/shared/crypto/mnemonic';
 import { etc } from '@noble/ed25519';
 import { useDropzone } from 'react-dropzone';
 import useStorage from '@root/src/shared/hooks/useStorage';
+import BackendClient from '@root/src/shared/client/BackendClient';
 
 type Inputs = {
   name: string;
@@ -46,7 +47,6 @@ export default function Guide() {
     // const hdKey = Mnemonic.generateHdKeyFromMnemonic(mnemonic);
     const hdKey = Mnemonic.generateEd25519FromMnemonic(mnemonic);
     const address = etc.bytesToHex(hdKey.publicKeyRaw);
-    keystoreStorage.add(address);
     accountStorage.add(address, {
       name: accountName || `Account_${address.substring(0, 6)}`,
       address: address,
@@ -54,6 +54,8 @@ export default function Guide() {
       publicKey: etc.bytesToHex(hdKey.publicKeyRaw),
       privateKey: etc.bytesToHex(hdKey.privateKey),
     });
+    // keystoreStorage.add(address);
+    BackendClient.switchAccount(address);
     navigate('/home/account');
   }, [getValues, navigate]);
 
@@ -78,7 +80,8 @@ export default function Guide() {
       await accountStorage.importAccounts(jsonFile);
       const accounts = jsonFile.accounts || [];
       if (!mainAccount) {
-        await keystoreStorage.set(accounts[0]?.address);
+        // await keystoreStorage.set(accounts[0]?.address);
+        await BackendClient.switchAccount(accounts[0]?.address);
       }
       console.log(accountStorage);
       navigate('/home/account');

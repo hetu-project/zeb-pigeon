@@ -130,6 +130,7 @@ const P2PNetworkTopology: React.FC = () => {
       .enter()
       .append('text')
       .attr('class', 'node-label')
+      .attr('fill', 'white')
       .text((d: any) => d.node_id.substr(-6))
       .attr('dx', 40) // Offset 20 pixels to the right of the node
       .attr('dy', 20); // Offset 5 pixels below the node
