@@ -11,6 +11,7 @@ type Inputs = {
   name: string;
   url: string;
   agent: string;
+  rpc: string;
 };
 export default function AddNetworkForm() {
   const { register, getValues, setValue } = useForm<Inputs>();
@@ -23,9 +24,10 @@ export default function AddNetworkForm() {
         return network.name === match.params.name;
       });
       if (!config) return;
-      setValue('name', config.name);
-      setValue('url', config.url);
-      setValue('agent', config.agent);
+      setValue('name', config.name || '');
+      setValue('url', config.url || '');
+      setValue('agent', config.agent || '');
+      setValue('rpc', config.rpc || '');
     }
   }, [allNetwork, match?.params?.name, setValue]);
   useEffect(() => {
@@ -33,13 +35,15 @@ export default function AddNetworkForm() {
   }, [initParams]);
   const handleAddNetwork = useCallback(async () => {
     const name = getValues('name');
-    const url = getValues('url');
-    const agent = getValues('agent');
-    if (!name || !url) return;
+    const url = getValues('url') || '';
+    const rpc = getValues('rpc') || '';
+    const agent = getValues('agent') || '';
+    if (!name) return;
     await networkStorage.add(name, {
       name,
       url,
       agent,
+      rpc,
     });
     navigate(-1);
   }, [getValues, navigate]);
@@ -67,13 +71,13 @@ export default function AddNetworkForm() {
           />
         </div>
         <div className="">
-          <div>{'Url:'}</div>
-          <input className="w-full input input-sm border zm-bg-card" {...register('url')} />
+          <div>{'Rpc:'}</div>
+          <input className="w-full input input-sm border zm-bg-card" {...register('rpc')} />
         </div>
-        <div className="">
+        {/* <div className="">
           <div>{'Agent:'}</div>
           <input className="w-full input input-sm border zm-bg-card" {...register('agent')} />
-        </div>
+        </div> */}
       </div>
       <div className="flex items-center justify-center gap-4 mt-7">
         <Button

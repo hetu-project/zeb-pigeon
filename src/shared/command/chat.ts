@@ -9,6 +9,15 @@ export class ChatCommandFactory {
       },
     };
   }
+
+  static changeNetwork(rpc: string) {
+    return {
+      type: ChatCommand.ChatChangeNetwork,
+      data: {
+        rpc,
+      },
+    };
+  }
   static sendMessage(
     from: string,
     to: string,

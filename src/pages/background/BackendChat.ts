@@ -44,6 +44,19 @@ export class BackendChat {
     this.chatApi.accountSendMessage(from, to, message, fromNode, toNode, signature);
   }
 
+  switchSeedRpc = async (rpc: string) => {
+    this.seedRpc = rpc;
+    this.chatApi.seedRpcServer = rpc;
+    const address = await keystoreStorage.get();
+    if (!address) return;
+    // await keystoreStorage.set(address);
+    const data = await this.chatApi.getEndpoint(address);
+    const url = new URL(data.wsAddr);
+    const wsUrl = `${data.wsAddr}/ws${url.port}`;
+    await this.changeEndPoint(wsUrl);
+    this.chatApi.provider.websocket.send(hexToU8a(address));
+  };
+
   changeAccount = async (address: string) => {
     if (!address) return;
     await keystoreStorage.set(address);

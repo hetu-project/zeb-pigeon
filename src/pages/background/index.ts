@@ -34,6 +34,12 @@ chrome.runtime.onMessage.addListener(request => {
       api.changeAccount(address);
       break;
     }
+    case ChatCommand.ChatChangeNetwork: {
+      const { rpc } = request.data || {};
+      // api.seedRpc = rpc;
+      api.switchSeedRpc(rpc);
+      break;
+    }
     default:
       break;
   }
@@ -69,7 +75,7 @@ async function init() {
   const activeNetwork: NetworkConfig | undefined = allNetworks?.find(item => {
     return item.name === network;
   });
-  api.seedRpc = 'http://127.0.0.1:12345/rpc12345';
+  api.seedRpc = activeNetwork?.rpc || 'http://127.0.0.1:12345/rpc12345';
   console.log(activeNetwork);
 
   // api.changeEndPoint(activeNetwork?.url);

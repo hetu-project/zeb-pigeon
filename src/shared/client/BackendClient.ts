@@ -10,7 +10,8 @@ export default class BackendClient {
       return net.name === name;
     });
     if (!network) return;
-    await chrome.runtime.sendMessage(ChatCommandFactory.changeEndpoint(network.url));
+    // await chrome.runtime.sendMessage(ChatCommandFactory.changeEndpoint(network.url));
+    await chrome.runtime.sendMessage(ChatCommandFactory.changeNetwork(network.rpc));
   }
 
   static async switchAccount(account: string) {

@@ -14,7 +14,7 @@ import messagesStorage from '@root/src/shared/storages/messageStorage';
 import messagesSessionStorage from '@root/src/shared/storages/messageSessionStorage';
 import { signChatMessage } from '@root/src/shared/account/sign';
 import { messageStorageSortKey } from '@root/src/shared/account';
-import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
+// import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
 import { useActiveNetwork, useNetworkList } from '@root/src/shared/hooks/network';
 import useStorage from '@root/src/shared/hooks/useStorage';
 import activeTargetNodeStorage from '@root/src/shared/storages/activeTargetNodeStorage';
@@ -108,7 +108,7 @@ export default function MessageContent() {
           <div className={' mx-2 my-2 px-2 py-2 rounded-full'}>
             <NoSymbolIcon className="w-5 h-5 cursor-pointer text-[#9AA0A6]" onClick={clearMessage} />
           </div>
-          <div className="flex items-center ml-4">
+          {/* <div className="flex items-center ml-4">
             <div className="mr-2">Target Node:</div>
             <div>
               <Menu>
@@ -133,7 +133,7 @@ export default function MessageContent() {
                 </MenuList>
               </Menu>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="flex-grow overflow-hidden flex flex-col justify-end">
