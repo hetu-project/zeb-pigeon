@@ -1,6 +1,6 @@
 import { TicketIcon, ShareIcon, PaperAirplaneIcon, StarIcon, ChartBarSquareIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import {
   Button,
   Menu,
@@ -14,19 +14,31 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  SkeletonCircle,
 } from '@chakra-ui/react';
 // import CausalityGraphsSvg from '@assets/img/chat/CausalityGraphs.svg';
 import { useActiveAccount } from '@root/src/shared/hooks/accounts';
 import { MessageItem } from '@root/src/shared/storages/messageStorage';
-import MessageGraph from './MessageGraph';
+// import MessageGraph from './MessageGraph';
+import { useMessageGraph } from '@root/src/shared/hooks/messages';
+import useSWR from 'swr';
+import NoData from '@root/src/shared/components/NoData';
+import { rpcMessageFetcher } from '@root/src/shared/gateway/rpc';
+import NodeGraph from './NodeGraph';
 export interface MessageCardProps {
   position: 'left' | 'right';
   message: string;
+  messageId: string;
 }
 
-export function MessageCard({ position = 'left', message }: MessageCardProps) {
+export function MessageCard({ position = 'left', message, messageId }: MessageCardProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [showGraphs, setShowGraphs] = useState(false);
+  const graph = useMessageGraph(message);
+  const { data, isLoading } = useSWR(!graph && showGraphs ? `/api/${messageId}` : null, rpcMessageFetcher);
+  const result = useMemo(() => {
+    return graph || data;
+  }, [data, graph]);
   return (
     <div
       className={clsx('flex items-center rounded-xl relative', {
@@ -95,7 +107,16 @@ export function MessageCard({ position = 'left', message }: MessageCardProps) {
           <ModalBody className="">
             <div className="flex items-center justify-center">
               {/* <img className="w-[738px] h-[646px] object-contain" src={CausalityGraphsSvg} alt="" /> */}
-              <MessageGraph />
+              {isLoading ? (
+                <div className="text-white">
+                  <SkeletonCircle startColor="#312F2F" endColor="#605E5C" height={'500px'} width={'500px'} />
+                </div>
+              ) : (
+                <>
+                  {/* {result ? <MessageGraph graphData={data} /> : <MessageGraph  graphData={data}/>} */}
+                  {result ? <NodeGraph /> : <NodeGraph />}
+                </>
+              )}
             </div>
           </ModalBody>
           <ModalFooter>
@@ -137,18 +158,25 @@ export default function MessageList({ list = [] }: MessageListProps) {
     }
   }, [list.length]);
   return (
-    <div className="overflow-scroll max-h-full" ref={containerRef}>
-      <div className="flex flex-col gap-3 py-4 justify-end">
-        {list.map((item, index) => {
-          return (
-            <MessageCard
-              key={index}
-              position={activeAccount?.address !== item?.from ? 'left' : 'right'}
-              message={item?.message}
-            />
-          );
-        })}
-      </div>
+    <div className={clsx('overflow-scroll max-h-full', list.length > 0 ? '' : 'h-full')} ref={containerRef}>
+      {list.length > 0 ? (
+        <div className="flex flex-col gap-3 py-4 justify-end">
+          {list.map((item, index) => {
+            return (
+              <MessageCard
+                key={index}
+                position={activeAccount?.address !== item?.from ? 'left' : 'right'}
+                message={item?.message}
+                messageId={item?.message}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <div className=" w-full h-full flex items-center justify-center">
+          <NoData />
+        </div>
+      )}
     </div>
   );
 }

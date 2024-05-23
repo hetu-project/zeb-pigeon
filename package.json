@@ -1,11 +1,11 @@
 {
-  "name": "ZMessager",
+  "name": "pigeon",
   "version": "0.0.1",
-  "description": "ZMessager",
+  "description": "Pigeon",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite.git"
+    "url": "https://github.com/NagaraTech/z-message-extension.git"
   },
   "scripts": {
     "pbjs:message": "pnpm pbjs -t  static-module -w es6 --es6  src/proto/zmessage.proto -o src/proto/zmessage.ts",
@@ -49,13 +49,16 @@
     "@reduxjs/toolkit": "^2.2.3",
     "@scure/bip32": "^1.4.0",
     "@scure/bip39": "^1.3.0",
+    "@types/d3": "^7.4.3",
     "autoprefixer": "^10.4.19",
+    "axios": "^1.6.8",
     "bip32": "^4.0.0",
     "bip39": "^3.1.0",
     "bs58check": "^3.0.1",
     "clsx": "^2.1.0",
     "construct-style-sheets-polyfill": "3.1.0",
     "copy-to-clipboard": "^3.3.3",
+    "d3": "^7.9.0",
     "daisyui": "^4.9.0",
     "ed25519-keygen": "^0.5.0",
     "eventemitter3": "^5.0.1",
@@ -71,6 +74,7 @@
     "react-hook-form": "^7.51.2",
     "react-redux": "^9.1.0",
     "react-router-dom": "^6.22.3",
+    "swr": "^2.2.5",
     "tailwindcss": "^3.4.3",
     "tiny-secp256k1": "^2.2.3",
     "ts-proto": "^1.172.0",
@@ -127,6 +131,5 @@
       "prettier --write",
       "eslint --fix"
     ]
-  },
-  "packageManager": "pnpm@8.9.2"
+  }
 }

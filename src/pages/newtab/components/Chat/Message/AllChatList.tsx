@@ -4,6 +4,7 @@ import { useContactByAddress } from '@root/src/shared/hooks/contacts';
 import { useSessionList } from '@root/src/shared/hooks/session';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import SessionMenuContext from './SessionMenuContext';
 export interface MessageCardProps {
   icon?: string;
   name?: string;
@@ -26,14 +27,18 @@ export function MessageCard({
   }, [messageList]);
 
   return (
-    <Link to={`/chat/${to}`} replace className="flex items-center bg-black bg-opacity-50 rounded-xl">
-      <div className=" mx-2 my-2 px-2 py-2 bg-[#DADCE0] rounded-full">
-        <TicketIcon className="w-6 h-6 text-[#9AA0A6]" />
-      </div>
-      <div className="py-4 pr-4 overflow-hidden">
-        <div className="zm-message-title text-xs truncate">{name || contact?.name || to || ''}</div>
-        <div className=" zm-message-description truncate text-xs">{message || latestMessage?.message}</div>
-      </div>
+    <Link to={`/chat/${to}`} replace className="bg-black bg-opacity-50 rounded-xl">
+      <SessionMenuContext from={from} to={to} className="flex-grow w-full">
+        <div className="flex-grow flex items-center">
+          <div className=" mx-2 my-2 px-2 py-2 bg-[#DADCE0] rounded-full">
+            <TicketIcon className="w-6 h-6 text-[#9AA0A6]" />
+          </div>
+          <div className="py-4 pr-4 overflow-hidden flex-grow text-left">
+            <div className="zm-message-title text-xs truncate">{name || contact?.name || to || ''}</div>
+            <div className=" zm-message-description truncate text-xs h-4">{message || latestMessage?.message}</div>
+          </div>
+        </div>
+      </SessionMenuContext>
     </Link>
   );
 }

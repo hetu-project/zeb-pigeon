@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@chakra-ui/react';
 import networkStorage from '@root/src/shared/storages/networkStorage';
 import { useActiveNetwork, useNetworkList } from '@root/src/shared/hooks/network';
-import activeNetworkStorage from '@root/src/shared/storages/activeNetworkStorage';
+import BackendClient from '@root/src/shared/client/BackendClient';
 
 export interface NetworkItemProps {
   name?: string;
@@ -29,7 +29,11 @@ export const NetworkItem = ({ name, isActive }: NetworkItemProps) => {
 
   const handleActiveNetwork = useCallback(async () => {
     if (!name) return;
-    await activeNetworkStorage.add(name);
+    await BackendClient.activeNetwork(name);
+    // await activeNetworkStorage.add(name);
+    // if (!url) {
+    //   await chrome.runtime.sendMessage(ChatCommandFactory.changeEndpoint(url));
+    // }
   }, [name]);
 
   const handleEditNetwork = useCallback(async () => {

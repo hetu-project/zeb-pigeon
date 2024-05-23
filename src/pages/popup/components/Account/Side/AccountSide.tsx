@@ -15,6 +15,7 @@ import accountStorage from '@root/src/shared/storages/accountStorage';
 import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
 import { saveAs } from 'file-saver';
 import copy from 'copy-to-clipboard';
+import BackendClient from '@root/src/shared/client/BackendClient';
 
 interface AccountItemProps {
   address?: string;
@@ -68,7 +69,8 @@ export default function AccountSide() {
   const handleActive = useCallback(
     async (account: string) => {
       if (account) {
-        await keystoreStorage.set(account);
+        await BackendClient.switchAccount(account);
+        // await keystoreStorage.set(account);
         navigate(-1);
       }
     },

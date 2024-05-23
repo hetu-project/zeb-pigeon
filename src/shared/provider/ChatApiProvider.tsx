@@ -1,13 +1,15 @@
 import React, { ReactNode, FC, createContext, useMemo, useState, useEffect, useCallback } from 'react';
 import ChatApi from '../client/ChatApi';
-import WsProvider from '../client/provider/WsProvider';
+// import WsProvider from '../client/provider/WsProvider';
 import { useActiveAccount } from '../hooks/accounts';
 import { useActiveNetwork } from '../hooks/network';
 import messagesStorage from '../storages/messageStorage';
 import { ZMessage } from '@root/src/proto/zmessage';
-import { u8aToString } from '../utils';
+import { hexToU8a, u8aToString } from '../utils';
 import { ChatMessage } from '@root/src/proto/ChatMessage';
 import { messageStorageSortKey } from '../account';
+import { ZChat } from '@root/src/proto/ZMsg';
+// import { ChatCommandFactory } from '../command/chat';
 export interface ChatApiContextProps {
   api?: ChatApi;
   setEndpoints?: (endpoints: string | string[]) => void;
@@ -20,7 +22,7 @@ interface ChatApiProviderProps {
   children: ReactNode;
 }
 const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
-  const [api, setApi] = useState<ChatApi | undefined>();
+  const [api] = useState<ChatApi | undefined>();
   const activeNetwork = useActiveNetwork();
   const endpoints = useMemo(() => {
     return activeNetwork?.url;
@@ -30,12 +32,13 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
   const activeAccount = useActiveAccount();
 
   useEffect(() => {
-    const wsProvider = new WsProvider(endpoints);
-    const chatApi = new ChatApi({
-      provider: wsProvider,
-    });
+    // const wsProvider = new WsProvider(endpoints);
+    // const chatApi = new ChatApi({
+    //   provider: wsProvider,
+    // });
+    // chrome.runtime.sendMessage(ChatCommandFactory.changeEndpoint(endpoints));
     setTimeout(() => {
-      setApi(chatApi);
+      // setApi(chatApi);
     }, 1000);
     return () => {};
   }, [endpoints]);
@@ -62,7 +65,9 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
   const handleReceiveMessage = useCallback(
     async (message: ZMessage) => {
       if (!activeAccount) return;
-      const chatMessage = ChatMessage.decode(message.data);
+      const zChat = ZChat.decode(message.data);
+      const chatMessageBuffer = hexToU8a(zChat.messageData);
+      const chatMessage = ChatMessage.decode(chatMessageBuffer);
       const from = u8aToString(chatMessage.from);
       const to = u8aToString(chatMessage.to);
       // const to = activeAccount?.address;
@@ -80,7 +85,6 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
         message: textMessage,
         sign: '',
       };
-      console.log('handleReceiveMessage', message);
       console.log('handleReceiveMessage', chatMessage);
       console.log('handleReceiveMessage', receiveMessage);
 
@@ -91,7 +95,7 @@ const ChatApiProvider: FC<ChatApiProviderProps> = ({ children }) => {
   useEffect(() => {
     if (!api) return;
     if (!activeAccount?.address) return;
-    api.accountSubscribeMessage(handleReceiveMessage as never);
+    // api.accountSubscribeMessage(handleReceiveMessage as never);
   }, [activeAccount?.address, api, handleReceiveMessage]);
   return <ChatApiContext.Provider value={value}>{children}</ChatApiContext.Provider>;
 };

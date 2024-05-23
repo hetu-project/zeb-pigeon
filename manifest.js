@@ -34,6 +34,8 @@ const manifest = {
   icons: {
     128: 'icon-128.png',
   },
+  optional_host_permissions: ['https://*/*', 'http://*/*'],
+
   content_scripts: [
     {
       matches: ['http://*/*', 'https://*/*', '<all_urls>'],

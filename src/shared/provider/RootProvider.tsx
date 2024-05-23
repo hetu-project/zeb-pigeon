@@ -7,6 +7,7 @@ import { ChakraBaseProvider, extendBaseTheme, theme } from '@chakra-ui/react';
 const extendTheme = extendBaseTheme({
   components: {
     Alert: theme.components.Alert,
+    Skeleton: theme.components.Skeleton,
   },
 });
 

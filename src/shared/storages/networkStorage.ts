@@ -2,6 +2,7 @@ import { BaseStorage, createStorage, StorageType } from '@src/shared/storages/ba
 export interface NetworkConfig {
   name: string;
   url: string;
+  rpc: string;
   agent?: string;
 }
 
