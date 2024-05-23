@@ -422,6 +422,12 @@ export interface QueryByTableKeyID {
   lastPos: string;
 }
 
+export interface OutboundMsg {
+  from: Uint8Array;
+  to: Uint8Array;
+  data: Uint8Array;
+}
+
 function createBaseZMessage(): ZMessage {
   return {
     id: new Uint8Array(0),
@@ -2239,6 +2245,95 @@ export const QueryByTableKeyID = {
   fromPartial<I extends Exact<DeepPartial<QueryByTableKeyID>, I>>(object: I): QueryByTableKeyID {
     const message = createBaseQueryByTableKeyID();
     message.lastPos = object.lastPos ?? '0';
+    return message;
+  },
+};
+
+function createBaseOutboundMsg(): OutboundMsg {
+  return { from: new Uint8Array(0), to: new Uint8Array(0), data: new Uint8Array(0) };
+}
+
+export const OutboundMsg = {
+  encode(message: OutboundMsg, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.from.length !== 0) {
+      writer.uint32(10).bytes(message.from);
+    }
+    if (message.to.length !== 0) {
+      writer.uint32(18).bytes(message.to);
+    }
+    if (message.data.length !== 0) {
+      writer.uint32(26).bytes(message.data);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): OutboundMsg {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseOutboundMsg();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.from = reader.bytes();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.to = reader.bytes();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.data = reader.bytes();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): OutboundMsg {
+    return {
+      from: isSet(object.from) ? bytesFromBase64(object.from) : new Uint8Array(0),
+      to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
+      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
+    };
+  },
+
+  toJSON(message: OutboundMsg): unknown {
+    const obj: any = {};
+    if (message.from.length !== 0) {
+      obj.from = base64FromBytes(message.from);
+    }
+    if (message.to.length !== 0) {
+      obj.to = base64FromBytes(message.to);
+    }
+    if (message.data.length !== 0) {
+      obj.data = base64FromBytes(message.data);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<OutboundMsg>, I>>(base?: I): OutboundMsg {
+    return OutboundMsg.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<OutboundMsg>, I>>(object: I): OutboundMsg {
+    const message = createBaseOutboundMsg();
+    message.from = object.from ?? new Uint8Array(0);
+    message.to = object.to ?? new Uint8Array(0);
+    message.data = object.data ?? new Uint8Array(0);
     return message;
   },
 };

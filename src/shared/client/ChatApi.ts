@@ -1,54 +1,10 @@
 import { ChatMessage, ChatType } from '@root/src/proto/ChatMessage';
-import { ProviderInterfaceCallback } from './provider';
 import WsProvider from './provider/WsProvider';
-// import { ZMessage, ZType } from '@src/proto/zmessage';
-import { Action, Clock, ClockInfo, Identity, Innermsg, ZChat, ZMessage, ZType } from '@src/proto/ZMsg';
+import { Clock, ClockInfo, OutboundMsg, ZChat, ZMessage, ZType } from '@src/proto/ZMsg';
 
 import { hexToU8a, stringToU8a, u8aToHex, u8aToU8a } from '@src/shared/utils';
 import { blake2s } from '@noble/hashes/blake2s';
 // import axios from 'axios';
-
-export interface JsonRpcObject {
-  id: number;
-  jsonrpc: '2.0';
-}
-
-export interface JsonRpcRequest extends JsonRpcObject {
-  method: string;
-  params: unknown;
-}
-
-export interface JsonRpcResponseBaseError {
-  code: number;
-  data?: number | string;
-  message: string;
-}
-
-export interface RpcErrorInterface<T> {
-  code: number;
-  data?: T;
-  message: string;
-  stack: string;
-}
-
-interface JsonRpcResponseSingle<T> {
-  error?: JsonRpcResponseBaseError;
-  result: T;
-}
-
-interface JsonRpcResponseSubscription<T> {
-  method?: string;
-  params: {
-    error?: JsonRpcResponseBaseError;
-    result: T;
-    subscription: number | string;
-  };
-}
-
-export type JsonRpcResponseBase<T> = JsonRpcResponseSingle<T> & JsonRpcResponseSubscription<T>;
-
-export type JsonRpcResponse<T> = JsonRpcObject & JsonRpcResponseBase<T>;
-
 export interface ChatApiOptions {
   provider?: WsProvider;
   seedRpc: string;
@@ -56,6 +12,7 @@ export interface ChatApiOptions {
 export default class ChatApi {
   provider: WsProvider;
   seedRpcServer = 'http://127.0.0.1:12345/rpc12345';
+  account: string;
   constructor(options?: ChatApiOptions) {
     if (options?.provider) {
       this.provider = options?.provider;
@@ -82,6 +39,7 @@ export default class ChatApi {
   }
 
   public async connect(address: string) {
+    this.account = address;
     this.provider.websocket.send(address);
   }
 
@@ -113,6 +71,10 @@ export default class ChatApi {
     node: string,
     signature?: Uint8Array,
   ) {
+    return await this.sendMessage(from, to, message, signature);
+  }
+
+  public async sendMessage(from: string, to: string, message: string, signature?: Uint8Array) {
     const chatMessage = ChatMessage.create({
       // id: blake2s(stringToU8a(message + new Date().getMilliseconds())),
       version: 0,
@@ -158,31 +120,42 @@ export default class ChatApi {
       to: hexToU8a(to),
     });
 
-    const innerMessage = Innermsg.create({
-      message: messageCreated,
-      identity: Identity.IDENTITY_CLIENT,
-      action: Action.ACTION_WRITE,
+    console.log('self messageCreated', messageCreated);
+
+    // const innerMessage = Innermsg.create({
+    //   message: messageCreated,
+    //   identity: Identity.IDENTITY_CLIENT,
+    //   action: Action.ACTION_WRITE,
+    // });
+    // console.log('innerMessage', innerMessage);
+    const outboundMsg = OutboundMsg.create({
+      from: hexToU8a(from),
+      to: hexToU8a(to),
+      data: chatBuffer,
     });
-    console.log('innerMessage', innerMessage);
 
     // const buffer = Innermsg.encode(innerMessage).finish();
-    const buffer = ZMessage.encode(messageCreated).finish();
+    // const buffer = ZMessage.encode(messageCreated).finish();
+    const buffer = OutboundMsg.encode(outboundMsg).finish();
 
     this.provider.sendMessage(buffer);
 
-    const originBuffer = new Uint8Array(
-      '42 13 72 101 108 108 111 44 32 119 111 114 108 100 33 58 32 163 32 16 47 89 196 210 55 102 242 29 38 162 166 117 34 155 52 97 67 13 142 197 117 241 100 196 203 148 207 12 242 66 32 239 197 79 14 219 189 35 37 13 172 203 41 29 157 111 27 166 69 75 119 66 48 155 119 27 111 59 207 33 157 114 108'
-        .split(' ')
-        .map(item => Number(item)),
-    );
-    console.log('messageCreated', messageCreated);
-    const originData = ZMessage.decode(originBuffer);
-    // const originDataBuffer = ZMessage.encode(originData).finish();
-    console.log('messageCreated originData', originData);
+    // const originBuffer = new Uint8Array(
+    //   '42 13 72 101 108 108 111 44 32 119 111 114 108 100 33 58 32 163 32 16 47 89 196 210 55 102 242 29 38 162 166 117 34 155 52 97 67 13 142 197 117 241 100 196 203 148 207 12 242 66 32 239 197 79 14 219 189 35 37 13 172 203 41 29 157 111 27 166 69 75 119 66 48 155 119 27 111 59 207 33 157 114 108'
+    //     .split(' ')
+    //     .map(item => Number(item)),
+    // );
+    // console.log('messageCreated', messageCreated);
+    // const originData = ZMessage.decode(originBuffer);
+    // // const originDataBuffer = ZMessage.encode(originData).finish();
+    // console.log('messageCreated originData', originData);
     // this.provider.sendMessage(originDataBuffer);
   }
-  public async accountSubscribeMessage(cb: ProviderInterfaceCallback) {
+  public async accountSubscribeMessage(cb: (message: unknown) => void) {
     this.provider.addEventListener('account_receiveMessage', cb);
+  }
+  public async subscribeMessage(cb: (message: unknown) => void) {
+    this.accountSubscribeMessage(cb);
   }
   public async onError(cb: () => void) {
     this.provider.eventemitter.addListener('error', cb);

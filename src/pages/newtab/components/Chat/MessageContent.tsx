@@ -55,7 +55,7 @@ export default function MessageContent() {
     if (!message) return;
     if (!activeAccount) return;
     if (!contact) return;
-    if (!toNode?.agent) return;
+    // if (!toNode?.agent) return;
     setValue('message', '');
     const mf = {
       from: activeAccount.address,
@@ -64,7 +64,6 @@ export default function MessageContent() {
       sign: '',
     };
     const signature = await signChatMessage(activeAccount, mf.message);
-    // await chatApi.accountSendMessage(mf.from, mf.to, mf.message, activeNetwork?.agent, toNode?.agent, signature);
     chrome.runtime.sendMessage(
       ChatCommandFactory.sendMessage(mf.from, mf.to, mf.message, activeNetwork?.agent, toNode?.agent, signature),
     );

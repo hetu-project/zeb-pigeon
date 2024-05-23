@@ -1,5 +1,4 @@
 import { ChatMessage } from '@root/src/proto/ChatMessage';
-import { ZChat, ZMessage } from '@root/src/proto/ZMsg';
 import { messageStorageSortKey } from '@root/src/shared/account';
 import WsProvider from '@root/src/shared/client/provider/WsProvider';
 import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
@@ -67,13 +66,8 @@ export class BackendChat {
     this.chatApi.provider.websocket.send(hexToU8a(address));
   };
 
-  async onMessage(message: ZMessage) {
+  async onMessage(chatMessage: ChatMessage) {
     try {
-      console.log('onMessage', message);
-      const zChat = ZChat.decode(message.data);
-      console.log('message zChat', zChat);
-      const chatMessageBuffer = hexToU8a(zChat.messageData);
-      const chatMessage = ChatMessage.decode(chatMessageBuffer);
       const from = u8aToString(chatMessage.from);
       const to = u8aToString(chatMessage.to);
       const key = messageStorageSortKey(from, to);

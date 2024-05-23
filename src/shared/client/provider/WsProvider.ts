@@ -1,29 +1,12 @@
-import { ZMessage } from '@root/src/proto/zmessage';
-import { ProviderInterfaceCallback, ProviderInterfaceEmitCb, ProviderInterfaceEmitted } from '.';
 import { EventEmitter } from 'eventemitter3';
 import { noop } from '@polkadot/util';
-// import { framework } from '@root/src/proto/zmessage';
-
-interface SubscriptionHandler {
-  callback: ProviderInterfaceCallback;
-  type: string;
-}
-
-interface WsStateAwaiting {
-  callback: ProviderInterfaceCallback;
-  method: string;
-  params: unknown[];
-  start: number;
-  subscription?: SubscriptionHandler | undefined;
-}
+import { ChatMessage } from '@root/src/proto/ChatMessage';
 
 const RETRY_DELAY = 5_000;
 
 export default class WsProvider {
   websocket: WebSocket | null;
   private endpoints: string;
-  private id: number = 0;
-  private handlers: Record<string, WsStateAwaiting> = {};
   private autoConnectMs = RETRY_DELAY;
   public readonly isReadyPromise: Promise<WsProvider>;
   eventemitter: EventEmitter;
@@ -94,12 +77,14 @@ export default class WsProvider {
     message.data.arrayBuffer().then(buffer => {
       // const decodedOrigin = ZChat.decode(new Uint8Array(buffer));
       // console.log('onSocketMessage', decodedOrigin);
-      const decoded = ZMessage.create({
-        data: new Uint8Array(buffer),
-      });
+      // const decoded = ZMessage.create({
+      //   data: new Uint8Array(buffer),
+      // });
 
-      console.log('onSocketMessage', buffer);
-      this.eventemitter.emit('account_receiveMessage', decoded);
+      const chatMessage = ChatMessage.decode(new Uint8Array(buffer));
+      console.log('onSocketMessage buffer', chatMessage);
+      console.log('onSocketMessage chat Message', chatMessage);
+      this.eventemitter.emit('account_receiveMessage', chatMessage);
     });
 
     // const response = JSON.parse(message.data) as JsonRpcResponse<string>;
@@ -107,13 +92,13 @@ export default class WsProvider {
 
     // return response.method === undefined ? this.onSocketMessageResult(response) : this.onSocketMessageResult(response);
   };
-  on(type: ProviderInterfaceEmitted, sub: ProviderInterfaceEmitCb): () => void {
+  on(type: string, sub: () => void): () => void {
     this.eventemitter.on(type, sub);
     return (): void => {
       this.eventemitter.removeListener(type, sub);
     };
   }
-  addEventListener(method: string, cb: ProviderInterfaceCallback) {
+  addEventListener(method: string, cb: (result: unknown) => void) {
     this.eventemitter.addListener(method, cb);
   }
   sendMessage(message: Uint8Array) {
