@@ -423,6 +423,7 @@ export interface QueryByTableKeyID {
 }
 
 export interface OutboundMsg {
+  id: Uint8Array;
   from: Uint8Array;
   to: Uint8Array;
   data: Uint8Array;
@@ -2250,19 +2251,22 @@ export const QueryByTableKeyID = {
 };
 
 function createBaseOutboundMsg(): OutboundMsg {
-  return { from: new Uint8Array(0), to: new Uint8Array(0), data: new Uint8Array(0) };
+  return { id: new Uint8Array(0), from: new Uint8Array(0), to: new Uint8Array(0), data: new Uint8Array(0) };
 }
 
 export const OutboundMsg = {
   encode(message: OutboundMsg, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id.length !== 0) {
+      writer.uint32(10).bytes(message.id);
+    }
     if (message.from.length !== 0) {
-      writer.uint32(10).bytes(message.from);
+      writer.uint32(18).bytes(message.from);
     }
     if (message.to.length !== 0) {
-      writer.uint32(18).bytes(message.to);
+      writer.uint32(26).bytes(message.to);
     }
     if (message.data.length !== 0) {
-      writer.uint32(26).bytes(message.data);
+      writer.uint32(34).bytes(message.data);
     }
     return writer;
   },
@@ -2279,17 +2283,24 @@ export const OutboundMsg = {
             break;
           }
 
-          message.from = reader.bytes();
+          message.id = reader.bytes();
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.to = reader.bytes();
+          message.from = reader.bytes();
           continue;
         case 3:
           if (tag !== 26) {
+            break;
+          }
+
+          message.to = reader.bytes();
+          continue;
+        case 4:
+          if (tag !== 34) {
             break;
           }
 
@@ -2306,6 +2317,7 @@ export const OutboundMsg = {
 
   fromJSON(object: any): OutboundMsg {
     return {
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
       from: isSet(object.from) ? bytesFromBase64(object.from) : new Uint8Array(0),
       to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
       data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
@@ -2314,6 +2326,9 @@ export const OutboundMsg = {
 
   toJSON(message: OutboundMsg): unknown {
     const obj: any = {};
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
+    }
     if (message.from.length !== 0) {
       obj.from = base64FromBytes(message.from);
     }
@@ -2331,6 +2346,7 @@ export const OutboundMsg = {
   },
   fromPartial<I extends Exact<DeepPartial<OutboundMsg>, I>>(object: I): OutboundMsg {
     const message = createBaseOutboundMsg();
+    message.id = object.id ?? new Uint8Array(0);
     message.from = object.from ?? new Uint8Array(0);
     message.to = object.to ?? new Uint8Array(0);
     message.data = object.data ?? new Uint8Array(0);

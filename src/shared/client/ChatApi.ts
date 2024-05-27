@@ -129,6 +129,7 @@ export default class ChatApi {
     // });
     // console.log('innerMessage', innerMessage);
     const outboundMsg = OutboundMsg.create({
+      id: hashId,
       from: hexToU8a(from),
       to: hexToU8a(to),
       data: chatBuffer,
