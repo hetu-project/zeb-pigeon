@@ -35,7 +35,7 @@ export function MessageCard({ position = 'left', message, messageId }: MessageCa
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [showGraphs, setShowGraphs] = useState(false);
   const graph = useMessageGraph(message);
-  const { data, isLoading } = useSWR(!graph && showGraphs ? `/api/${messageId}` : null, rpcMessageFetcher);
+  const { data, isLoading } = useSWR(!graph && showGraphs ? `${messageId}` : null, rpcMessageFetcher);
   const result = useMemo(() => {
     return graph || data;
   }, [data, graph]);
@@ -105,6 +105,10 @@ export function MessageCard({ position = 'left', message, messageId }: MessageCa
           }}>
           <ModalHeader className="text-white font-bold text-base">{'Causality Graphs'}</ModalHeader>
           <ModalBody className="">
+            <div className="flex items-center">
+              <div className=" text-white">messageId:</div>
+              <div className=" text-white">{messageId}</div>
+            </div>
             <div className="flex items-center justify-center">
               {/* <img className="w-[738px] h-[646px] object-contain" src={CausalityGraphsSvg} alt="" /> */}
               {isLoading ? (
@@ -167,7 +171,7 @@ export default function MessageList({ list = [] }: MessageListProps) {
                 key={index}
                 position={activeAccount?.address !== item?.from ? 'left' : 'right'}
                 message={item?.message}
-                messageId={item?.message}
+                messageId={item?.id}
               />
             );
           })}

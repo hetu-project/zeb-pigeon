@@ -339,6 +339,7 @@ export interface ZClock {
 /** Server Clock Message */
 export interface EventTrigger {
   clockInfo: ClockInfo | undefined;
+  message: ZMessage | undefined;
 }
 
 export interface DiffReq {
@@ -370,7 +371,7 @@ export interface Innermsg {
 }
 
 export interface ZChat {
-  messageData: string;
+  messageData: Uint8Array;
   clock: ClockInfo | undefined;
 }
 
@@ -423,9 +424,18 @@ export interface QueryByTableKeyID {
 }
 
 export interface OutboundMsg {
+  id: Uint8Array;
   from: Uint8Array;
   to: Uint8Array;
   data: Uint8Array;
+  type: ZType;
+}
+
+export interface InboundMsg {
+  id: Uint8Array;
+  from: Uint8Array;
+  data: Uint8Array;
+  type: ZType;
 }
 
 function createBaseZMessage(): ZMessage {
@@ -1128,13 +1138,16 @@ export const ZClock = {
 };
 
 function createBaseEventTrigger(): EventTrigger {
-  return { clockInfo: undefined };
+  return { clockInfo: undefined, message: undefined };
 }
 
 export const EventTrigger = {
   encode(message: EventTrigger, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.clockInfo !== undefined) {
       ClockInfo.encode(message.clockInfo, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.message !== undefined) {
+      ZMessage.encode(message.message, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -1153,6 +1166,13 @@ export const EventTrigger = {
 
           message.clockInfo = ClockInfo.decode(reader, reader.uint32());
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.message = ZMessage.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1163,13 +1183,19 @@ export const EventTrigger = {
   },
 
   fromJSON(object: any): EventTrigger {
-    return { clockInfo: isSet(object.clockInfo) ? ClockInfo.fromJSON(object.clockInfo) : undefined };
+    return {
+      clockInfo: isSet(object.clockInfo) ? ClockInfo.fromJSON(object.clockInfo) : undefined,
+      message: isSet(object.message) ? ZMessage.fromJSON(object.message) : undefined,
+    };
   },
 
   toJSON(message: EventTrigger): unknown {
     const obj: any = {};
     if (message.clockInfo !== undefined) {
       obj.clockInfo = ClockInfo.toJSON(message.clockInfo);
+    }
+    if (message.message !== undefined) {
+      obj.message = ZMessage.toJSON(message.message);
     }
     return obj;
   },
@@ -1181,6 +1207,8 @@ export const EventTrigger = {
     const message = createBaseEventTrigger();
     message.clockInfo =
       object.clockInfo !== undefined && object.clockInfo !== null ? ClockInfo.fromPartial(object.clockInfo) : undefined;
+    message.message =
+      object.message !== undefined && object.message !== null ? ZMessage.fromPartial(object.message) : undefined;
     return message;
   },
 };
@@ -1579,13 +1607,13 @@ export const Innermsg = {
 };
 
 function createBaseZChat(): ZChat {
-  return { messageData: '', clock: undefined };
+  return { messageData: new Uint8Array(0), clock: undefined };
 }
 
 export const ZChat = {
   encode(message: ZChat, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.messageData !== '') {
-      writer.uint32(10).string(message.messageData);
+    if (message.messageData.length !== 0) {
+      writer.uint32(10).bytes(message.messageData);
     }
     if (message.clock !== undefined) {
       ClockInfo.encode(message.clock, writer.uint32(18).fork()).ldelim();
@@ -1605,7 +1633,7 @@ export const ZChat = {
             break;
           }
 
-          message.messageData = reader.string();
+          message.messageData = reader.bytes();
           continue;
         case 2:
           if (tag !== 18) {
@@ -1625,15 +1653,15 @@ export const ZChat = {
 
   fromJSON(object: any): ZChat {
     return {
-      messageData: isSet(object.messageData) ? globalThis.String(object.messageData) : '',
+      messageData: isSet(object.messageData) ? bytesFromBase64(object.messageData) : new Uint8Array(0),
       clock: isSet(object.clock) ? ClockInfo.fromJSON(object.clock) : undefined,
     };
   },
 
   toJSON(message: ZChat): unknown {
     const obj: any = {};
-    if (message.messageData !== '') {
-      obj.messageData = message.messageData;
+    if (message.messageData.length !== 0) {
+      obj.messageData = base64FromBytes(message.messageData);
     }
     if (message.clock !== undefined) {
       obj.clock = ClockInfo.toJSON(message.clock);
@@ -1646,7 +1674,7 @@ export const ZChat = {
   },
   fromPartial<I extends Exact<DeepPartial<ZChat>, I>>(object: I): ZChat {
     const message = createBaseZChat();
-    message.messageData = object.messageData ?? '';
+    message.messageData = object.messageData ?? new Uint8Array(0);
     message.clock =
       object.clock !== undefined && object.clock !== null ? ClockInfo.fromPartial(object.clock) : undefined;
     return message;
@@ -2250,19 +2278,25 @@ export const QueryByTableKeyID = {
 };
 
 function createBaseOutboundMsg(): OutboundMsg {
-  return { from: new Uint8Array(0), to: new Uint8Array(0), data: new Uint8Array(0) };
+  return { id: new Uint8Array(0), from: new Uint8Array(0), to: new Uint8Array(0), data: new Uint8Array(0), type: 0 };
 }
 
 export const OutboundMsg = {
   encode(message: OutboundMsg, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id.length !== 0) {
+      writer.uint32(10).bytes(message.id);
+    }
     if (message.from.length !== 0) {
-      writer.uint32(10).bytes(message.from);
+      writer.uint32(18).bytes(message.from);
     }
     if (message.to.length !== 0) {
-      writer.uint32(18).bytes(message.to);
+      writer.uint32(26).bytes(message.to);
     }
     if (message.data.length !== 0) {
-      writer.uint32(26).bytes(message.data);
+      writer.uint32(34).bytes(message.data);
+    }
+    if (message.type !== 0) {
+      writer.uint32(40).int32(message.type);
     }
     return writer;
   },
@@ -2279,21 +2313,35 @@ export const OutboundMsg = {
             break;
           }
 
-          message.from = reader.bytes();
+          message.id = reader.bytes();
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.to = reader.bytes();
+          message.from = reader.bytes();
           continue;
         case 3:
           if (tag !== 26) {
             break;
           }
 
+          message.to = reader.bytes();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
           message.data = reader.bytes();
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.type = reader.int32() as any;
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -2306,14 +2354,19 @@ export const OutboundMsg = {
 
   fromJSON(object: any): OutboundMsg {
     return {
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
       from: isSet(object.from) ? bytesFromBase64(object.from) : new Uint8Array(0),
       to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
       data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
+      type: isSet(object.type) ? zTypeFromJSON(object.type) : 0,
     };
   },
 
   toJSON(message: OutboundMsg): unknown {
     const obj: any = {};
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
+    }
     if (message.from.length !== 0) {
       obj.from = base64FromBytes(message.from);
     }
@@ -2323,6 +2376,9 @@ export const OutboundMsg = {
     if (message.data.length !== 0) {
       obj.data = base64FromBytes(message.data);
     }
+    if (message.type !== 0) {
+      obj.type = zTypeToJSON(message.type);
+    }
     return obj;
   },
 
@@ -2331,9 +2387,115 @@ export const OutboundMsg = {
   },
   fromPartial<I extends Exact<DeepPartial<OutboundMsg>, I>>(object: I): OutboundMsg {
     const message = createBaseOutboundMsg();
+    message.id = object.id ?? new Uint8Array(0);
     message.from = object.from ?? new Uint8Array(0);
     message.to = object.to ?? new Uint8Array(0);
     message.data = object.data ?? new Uint8Array(0);
+    message.type = object.type ?? 0;
+    return message;
+  },
+};
+
+function createBaseInboundMsg(): InboundMsg {
+  return { id: new Uint8Array(0), from: new Uint8Array(0), data: new Uint8Array(0), type: 0 };
+}
+
+export const InboundMsg = {
+  encode(message: InboundMsg, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id.length !== 0) {
+      writer.uint32(10).bytes(message.id);
+    }
+    if (message.from.length !== 0) {
+      writer.uint32(18).bytes(message.from);
+    }
+    if (message.data.length !== 0) {
+      writer.uint32(26).bytes(message.data);
+    }
+    if (message.type !== 0) {
+      writer.uint32(32).int32(message.type);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): InboundMsg {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseInboundMsg();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.bytes();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.from = reader.bytes();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.data = reader.bytes();
+          continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.type = reader.int32() as any;
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): InboundMsg {
+    return {
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
+      from: isSet(object.from) ? bytesFromBase64(object.from) : new Uint8Array(0),
+      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
+      type: isSet(object.type) ? zTypeFromJSON(object.type) : 0,
+    };
+  },
+
+  toJSON(message: InboundMsg): unknown {
+    const obj: any = {};
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
+    }
+    if (message.from.length !== 0) {
+      obj.from = base64FromBytes(message.from);
+    }
+    if (message.data.length !== 0) {
+      obj.data = base64FromBytes(message.data);
+    }
+    if (message.type !== 0) {
+      obj.type = zTypeToJSON(message.type);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<InboundMsg>, I>>(base?: I): InboundMsg {
+    return InboundMsg.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<InboundMsg>, I>>(object: I): InboundMsg {
+    const message = createBaseInboundMsg();
+    message.id = object.id ?? new Uint8Array(0);
+    message.from = object.from ?? new Uint8Array(0);
+    message.data = object.data ?? new Uint8Array(0);
+    message.type = object.type ?? 0;
     return message;
   },
 };

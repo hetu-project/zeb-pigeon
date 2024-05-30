@@ -60,7 +60,13 @@ export default class ChatApi {
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    return data;
+    const wsAddr = data.wsAddr;
+    const wsUrl = new URL(wsAddr);
+    const seedRpcUrl = new URL(this.seedRpcServer);
+    return {
+      wsAddr: `${wsUrl.protocol}//${seedRpcUrl.hostname}:${wsUrl.port}`,
+    };
+    // return data;
   };
 
   public async accountSendMessage(
@@ -102,7 +108,7 @@ export default class ChatApi {
       createAt: new Date().getMilliseconds().toString(),
     });
     const chat = ZChat.create({
-      messageData: u8aToHex(chatBuffer), // (message),
+      messageData: chatBuffer, // (message),
       clock: clockInfo,
     });
     console.log('self zchat', chat);
@@ -129,7 +135,9 @@ export default class ChatApi {
     // });
     // console.log('innerMessage', innerMessage);
     const outboundMsg = OutboundMsg.create({
+      id: hashId,
       from: hexToU8a(from),
+      type: ZType.Z_TYPE_ZCHAT,
       to: hexToU8a(to),
       data: chatBuffer,
     });
@@ -138,6 +146,7 @@ export default class ChatApi {
     // const buffer = ZMessage.encode(messageCreated).finish();
     const buffer = OutboundMsg.encode(outboundMsg).finish();
 
+    console.log('OutboundMsg', buffer.toString());
     this.provider.sendMessage(buffer);
 
     // const originBuffer = new Uint8Array(
@@ -150,6 +159,7 @@ export default class ChatApi {
     // // const originDataBuffer = ZMessage.encode(originData).finish();
     // console.log('messageCreated originData', originData);
     // this.provider.sendMessage(originDataBuffer);
+    return outboundMsg;
   }
   public async accountSubscribeMessage(cb: (message: unknown) => void) {
     this.provider.addEventListener('account_receiveMessage', cb);
