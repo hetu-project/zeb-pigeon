@@ -4,7 +4,7 @@ import WsProvider from '@root/src/shared/client/provider/WsProvider';
 import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
 import messagesSessionStorage from '@root/src/shared/storages/messageSessionStorage';
 import messagesStorage from '@root/src/shared/storages/messageStorage';
-import { hexToU8a, u8aToString } from '@root/src/shared/utils';
+import { hexToU8a, u8aToHex, u8aToString } from '@root/src/shared/utils';
 import ChatApi from '@src/shared/client/ChatApi';
 
 export class BackendChat {
@@ -51,7 +51,7 @@ export class BackendChat {
     const outMsg = await this.chatApi.accountSendMessage(from, to, message, fromNode, toNode, signature);
     const storageKey = messageStorageSortKey(from, to);
     const mf = {
-      id: u8aToString(outMsg.id),
+      id: u8aToHex(outMsg.id, -1, false),
       from,
       to,
       message,
@@ -89,7 +89,7 @@ export class BackendChat {
       const from = u8aToString(chatMessage.from);
       const to = u8aToString(chatMessage.to);
       const key = messageStorageSortKey(from, to);
-      const id = u8aToString(chatMessage.id);
+      const id = u8aToHex(chatMessage.id, -1, false);
 
       const textMessage = u8aToString(chatMessage.data);
       const receiveMessage = {
