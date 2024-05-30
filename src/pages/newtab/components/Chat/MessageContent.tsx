@@ -11,7 +11,6 @@ import { useForm } from 'react-hook-form';
 // import { useChatApi } from '@root/src/shared/hooks/chat';
 import { useActiveAccount, useMessageList } from '@root/src/shared/hooks/accounts';
 import messagesStorage from '@root/src/shared/storages/messageStorage';
-import messagesSessionStorage from '@root/src/shared/storages/messageSessionStorage';
 import { signChatMessage } from '@root/src/shared/account/sign';
 import { messageStorageSortKey } from '@root/src/shared/account';
 // import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
@@ -68,10 +67,10 @@ export default function MessageContent() {
       ChatCommandFactory.sendMessage(mf.from, mf.to, mf.message, activeNetwork?.agent, toNode?.agent, signature),
     );
 
-    messagesStorage.addMessage(storageKey, mf);
-    messagesSessionStorage.updateSession(mf.from, { to: mf.to });
+    // messagesStorage.addMessage(storageKey, mf);
+    // messagesSessionStorage.updateSession(mf.from, { to: mf.to });
     return;
-  }, [activeAccount, activeNetwork?.agent, contact, getValues, setValue, storageKey, toNode?.agent]);
+  }, [activeAccount, activeNetwork?.agent, contact, getValues, setValue, toNode?.agent]);
 
   const handleKeyUp = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {

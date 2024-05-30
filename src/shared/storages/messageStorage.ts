@@ -1,5 +1,6 @@
 import { BaseStorage, createStorage, StorageType } from '@src/shared/storages/base';
 export interface MessageItem {
+  id: string;
   from: string;
   to: string;
   message: string;
