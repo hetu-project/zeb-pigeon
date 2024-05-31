@@ -1,7 +1,7 @@
 import { EventEmitter } from 'eventemitter3';
-import { noop } from '@polkadot/util';
 import { ChatMessage } from '@root/src/proto/ChatMessage';
 import { InboundMsg } from '@root/src/proto/ZMsg';
+export const noop = () => {};
 
 const RETRY_DELAY = 5_000;
 

@@ -2,8 +2,9 @@ import { ChatMessage, ChatType } from '@root/src/proto/ChatMessage';
 import WsProvider from './provider/WsProvider';
 import { Clock, ClockInfo, OutboundMsg, ZChat, ZMessage, ZType } from '@src/proto/ZMsg';
 
-import { hexToU8a, stringToU8a, u8aToHex, u8aToU8a } from '@src/shared/utils';
+import { hexToU8a, stringToU8a, u8aToHex } from '@src/shared/utils';
 import { blake2s } from '@noble/hashes/blake2s';
+import { hexToBytes } from '@noble/hashes/utils';
 // import axios from 'axios';
 export interface ChatApiOptions {
   provider?: WsProvider;
@@ -88,14 +89,14 @@ export default class ChatApi {
       // publicKey: u8aToU8a(from),
       data: stringToU8a(message),
       signature: signature,
-      from: u8aToU8a(from),
-      to: u8aToU8a(to),
+      from: hexToBytes(from),
+      to: hexToBytes(to),
     });
     const chatBuffer = ChatMessage.encode(chatMessage).finish();
     const hashId = blake2s(chatBuffer);
     const clockId = blake2s(hashId);
     const clockValues = {
-      [u8aToHex(clockId, -1, false)]: '1',
+      [u8aToHex(clockId)]: '1',
     };
     const clock = Clock.create({
       values: clockValues,

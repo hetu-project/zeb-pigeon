@@ -51,7 +51,7 @@ export class BackendChat {
     const outMsg = await this.chatApi.accountSendMessage(from, to, message, fromNode, toNode, signature);
     const storageKey = messageStorageSortKey(from, to);
     const mf = {
-      id: u8aToHex(outMsg.id, -1, false),
+      id: u8aToHex(outMsg.id),
       from,
       to,
       message,
@@ -86,10 +86,10 @@ export class BackendChat {
 
   async onMessage(chatMessage: ChatMessage) {
     try {
-      const from = u8aToString(chatMessage.from);
-      const to = u8aToString(chatMessage.to);
+      const from = u8aToHex(chatMessage.from);
+      const to = u8aToHex(chatMessage.to);
       const key = messageStorageSortKey(from, to);
-      const id = u8aToHex(chatMessage.id, -1, false);
+      const id = u8aToHex(chatMessage.id);
 
       const textMessage = u8aToString(chatMessage.data);
       const receiveMessage = {
@@ -99,6 +99,7 @@ export class BackendChat {
         message: textMessage,
         sign: '',
       };
+      console.log('onMessage', key, receiveMessage);
       await messagesStorage.addMessage(key, receiveMessage);
     } catch (error) {
       console.error('message decode error', error);
