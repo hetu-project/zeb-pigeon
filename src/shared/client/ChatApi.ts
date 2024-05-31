@@ -12,7 +12,7 @@ export interface ChatApiOptions {
 }
 export default class ChatApi {
   provider: WsProvider;
-  seedRpcServer = 'http://127.0.0.1:12345/rpc12345';
+  seedRpcServer = '';
   account: string;
   constructor(options?: ChatApiOptions) {
     if (options?.provider) {
@@ -51,6 +51,9 @@ export default class ChatApi {
     };
     console.log('this.seedRpcServer', this.seedRpcServer);
     console.log('this.seedRpcServer', body);
+    if (!this.seedRpcServer) {
+      return;
+    }
 
     // const res = await axios.post(this.seedRpcServer, body);
     const res = await fetch(this.seedRpcServer, {

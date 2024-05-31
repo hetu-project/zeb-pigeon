@@ -68,6 +68,7 @@ export class BackendChat {
     if (!address) return;
     // await keystoreStorage.set(address);
     const data = await this.chatApi.getEndpoint(address);
+    if (!data) return;
     const url = new URL(data.wsAddr);
     const wsUrl = `${data.wsAddr}/ws${url.port}`;
     await this.changeEndPoint(wsUrl);
@@ -78,6 +79,7 @@ export class BackendChat {
     if (!address) return;
     await keystoreStorage.set(address);
     const data = await this.chatApi.getEndpoint(address);
+    if (!data) return;
     const url = new URL(data.wsAddr);
     const wsUrl = `${data.wsAddr}/ws${url.port}`;
     await this.changeEndPoint(wsUrl);

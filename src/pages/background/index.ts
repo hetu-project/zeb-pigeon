@@ -76,7 +76,7 @@ async function init() {
     return item.name === network;
   });
   if (!activeNetwork?.rpc) return;
-  api.seedRpc = activeNetwork?.rpc || 'http://127.0.0.1:12345/rpc12345';
+  api.seedRpc = activeNetwork?.rpc;
   api.switchSeedRpc(api.seedRpc);
   console.log(activeNetwork);
 
