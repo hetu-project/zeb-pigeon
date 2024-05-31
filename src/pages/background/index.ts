@@ -5,7 +5,7 @@ import { BackendChat } from './BackendChat';
 import { ChatCommand } from '@root/src/shared/command/types';
 import activeNetworkStorage from '@root/src/shared/storages/activeNetworkStorage';
 import networkStorage, { NetworkConfig } from '@root/src/shared/storages/networkStorage';
-import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
+// import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
 reloadOnUpdate('pages/background');
 
 /**
@@ -75,14 +75,15 @@ async function init() {
   const activeNetwork: NetworkConfig | undefined = allNetworks?.find(item => {
     return item.name === network;
   });
+  if (!activeNetwork?.rpc) return;
   api.seedRpc = activeNetwork?.rpc || 'http://127.0.0.1:12345/rpc12345';
   api.switchSeedRpc(api.seedRpc);
   console.log(activeNetwork);
 
   // api.changeEndPoint(activeNetwork?.url);
-  const account = await keystoreStorage.get();
-  if (account) {
-    await api.changeAccount(account);
-  }
+  // const account = await keystoreStorage.get();
+  // if (account) {
+  //   await api.changeAccount(account);
+  // }
 }
 init();

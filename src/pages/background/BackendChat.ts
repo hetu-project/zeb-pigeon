@@ -81,7 +81,7 @@ export class BackendChat {
     const url = new URL(data.wsAddr);
     const wsUrl = `${data.wsAddr}/ws${url.port}`;
     await this.changeEndPoint(wsUrl);
-    this.chatApi.provider.websocket.send(hexToU8a(address));
+    this.chatApi?.provider?.websocket?.send(hexToU8a(address));
   };
 
   async onMessage(chatMessage: ChatMessage) {
