@@ -4,81 +4,84 @@
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
-const P2PNetworkTopology: React.FC = () => {
+export interface P2PNetworkTopologyProps {
+  nodes?: any[];
+}
+
+const P2PNetworkTopology: React.FC<P2PNetworkTopologyProps> = ({ nodes = [] }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   // const nodeInfoRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const data = {
-      nodes: [
-        {
-          node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CA',
-          neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CB', '0x679320A64036b710371374aEdfa59Cff5c16f1CC'],
-          is_alive: true,
-        },
-        {
-          node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CB',
-          neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CA', '0x679320A64036b710371374aEdfa59Cff5c16f1CC'],
-          is_alive: true,
-        },
-        {
-          node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CC',
-          neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CA', '0x679320A64036b710371374aEdfa59Cff5c16f1CB'],
-          is_alive: true,
-        },
-        {
-          node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CD',
-          neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CE', '0x679320A64036b710371374aEdfa59Cff5c16f1CF'],
-          is_alive: true,
-        },
-        {
-          node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CE',
-          neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CA', '0x679320A64036b710371374aEdfa59Cff5c16f1CC'],
-          is_alive: true,
-        },
-        {
-          node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CF',
-          neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CH', '0x679320A64036b710371374aEdfa59Cff5c16f1CB'],
-          is_alive: true,
-        },
-        {
-          node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CG',
-          neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CE', '0x679320A64036b710371374aEdfa59Cff5c16f1CB'],
-          is_alive: true,
-        },
-        {
-          node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CH',
-          neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CI', '0x679320A64036b710371374aEdfa59Cff5c16f1CC'],
-          is_alive: true,
-        },
-        {
-          node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CI',
-          neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CA', '0x679320A64036b710371374aEdfa59Cff5c16f1CJ'],
-          is_alive: true,
-        },
-        {
-          node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CJ',
-          neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CB', '0x679320A64036b710371374aEdfa59Cff5c16f1CC'],
-          is_alive: true,
-        },
-        {
-          node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CK',
-          neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CJ', '0x679320A64036b710371374aEdfa59Cff5c16f1CC'],
-          is_alive: true,
-        },
-        {
-          node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CL',
-          neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CA', '0x679320A64036b710371374aEdfa59Cff5c16f1CL'],
-          is_alive: true,
-        },
-      ],
-      total_node_count: 12,
-      total_message_count: 18,
+      // nodes: [
+      //   {
+      //     node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CA',
+      //     neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CB', '0x679320A64036b710371374aEdfa59Cff5c16f1CC'],
+      //     is_alive: true,
+      //   },
+      //   {
+      //     node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CB',
+      //     neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CA', '0x679320A64036b710371374aEdfa59Cff5c16f1CC'],
+      //     is_alive: true,
+      //   },
+      //   {
+      //     node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CC',
+      //     neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CA', '0x679320A64036b710371374aEdfa59Cff5c16f1CB'],
+      //     is_alive: true,
+      //   },
+      //   {
+      //     node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CD',
+      //     neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CE', '0x679320A64036b710371374aEdfa59Cff5c16f1CF'],
+      //     is_alive: true,
+      //   },
+      //   {
+      //     node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CE',
+      //     neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CA', '0x679320A64036b710371374aEdfa59Cff5c16f1CC'],
+      //     is_alive: true,
+      //   },
+      //   {
+      //     node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CF',
+      //     neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CH', '0x679320A64036b710371374aEdfa59Cff5c16f1CB'],
+      //     is_alive: true,
+      //   },
+      //   {
+      //     node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CG',
+      //     neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CE', '0x679320A64036b710371374aEdfa59Cff5c16f1CB'],
+      //     is_alive: true,
+      //   },
+      //   {
+      //     node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CH',
+      //     neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CI', '0x679320A64036b710371374aEdfa59Cff5c16f1CC'],
+      //     is_alive: true,
+      //   },
+      //   {
+      //     node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CI',
+      //     neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CA', '0x679320A64036b710371374aEdfa59Cff5c16f1CJ'],
+      //     is_alive: true,
+      //   },
+      //   {
+      //     node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CJ',
+      //     neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CB', '0x679320A64036b710371374aEdfa59Cff5c16f1CC'],
+      //     is_alive: true,
+      //   },
+      //   {
+      //     node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CK',
+      //     neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CJ', '0x679320A64036b710371374aEdfa59Cff5c16f1CC'],
+      //     is_alive: true,
+      //   },
+      //   {
+      //     node_id: '0x679320A64036b710371374aEdfa59Cff5c16f1CL',
+      //     neighbor_nodes: ['0x679320A64036b710371374aEdfa59Cff5c16f1CA', '0x679320A64036b710371374aEdfa59Cff5c16f1CL'],
+      //     is_alive: true,
+      //   },
+      // ],
+      nodes,
     };
 
     const svg = d3.select(svgRef.current);
-    const width = window.innerWidth;
-    const height = window.innerHeight / 2;
+    const width = 645;
+    const height = 500;
     // const nodeInfo = d3.select(nodeInfoRef.current);
 
     const simulation = d3
@@ -131,7 +134,7 @@ const P2PNetworkTopology: React.FC = () => {
       .append('text')
       .attr('class', 'node-label')
       .attr('fill', 'white')
-      .text((d: any) => d.node_id.substr(-6))
+      .text((d: any) => `${d.node_id.substr(0, 6)}...${d.node_id.substr(-6)}`)
       .attr('dx', 40) // Offset 20 pixels to the right of the node
       .attr('dy', 20); // Offset 5 pixels below the node
 
@@ -171,7 +174,7 @@ const P2PNetworkTopology: React.FC = () => {
       d.fx = null;
       d.fy = null;
     }
-  }, []);
+  }, [nodes]);
 
   return (
     <div>
