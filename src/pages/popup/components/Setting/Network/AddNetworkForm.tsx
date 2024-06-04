@@ -4,8 +4,9 @@ import { useNavigate, useMatch } from 'react-router-dom';
 import { Button } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import networkStorage from '@root/src/shared/storages/networkStorage';
-import { useNetworkList } from '@root/src/shared/hooks/network';
+import { useActiveNetwork, useNetworkList } from '@root/src/shared/hooks/network';
 import clsx from 'clsx';
+import BackendClient from '@root/src/shared/client/BackendClient';
 
 type Inputs = {
   name: string;
@@ -17,6 +18,7 @@ export default function AddNetworkForm() {
   const { register, getValues, setValue } = useForm<Inputs>();
   const navigate = useNavigate();
   const allNetwork = useNetworkList();
+  const activeNetwork = useActiveNetwork();
   const match = useMatch('/setting/network/edit/:name');
   const initParams = useCallback(() => {
     if (match?.params?.name) {
@@ -45,8 +47,11 @@ export default function AddNetworkForm() {
       agent,
       rpc,
     });
+    if (!activeNetwork) {
+      BackendClient.activeNetwork(name);
+    }
     navigate(-1);
-  }, [getValues, navigate]);
+  }, [activeNetwork, getValues, navigate]);
   return (
     <div className="relative">
       <div className="flex items-center text-xl">

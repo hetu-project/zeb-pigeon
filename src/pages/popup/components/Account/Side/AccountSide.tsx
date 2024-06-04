@@ -20,12 +20,13 @@ import BackendClient from '@root/src/shared/client/BackendClient';
 interface AccountItemProps {
   address?: string;
   name?: string;
+  isActive?: boolean;
   onActive?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
-export const AccountItem: FC<AccountItemProps> = ({ address, name, onActive, onEdit, onDelete }) => {
+export const AccountItem: FC<AccountItemProps> = ({ address, name, onActive, onEdit, onDelete, isActive }) => {
   const toast = useToast();
   return (
     <div className="flex items-center justify-between px-4 py-3 gap-4">
@@ -53,7 +54,11 @@ export const AccountItem: FC<AccountItemProps> = ({ address, name, onActive, onE
       </div>
       <div className="flex gap-4">
         <CodeBracketIcon className="w-5 h-5 cursor-pointer" onClick={onEdit} />
-        <ArrowPathIcon className="w-5 h-5 cursor-pointer" onClick={onActive} />
+        {isActive ? (
+          <ArrowPathIcon className="w-5 h-5 zm-text-description cursor-not-allowed" />
+        ) : (
+          <ArrowPathIcon className="w-5 h-5 cursor-pointer" onClick={onActive} />
+        )}
         <ArchiveBoxXMarkIcon className="w-5 h-5 cursor-pointer" onClick={onDelete} />
       </div>
     </div>
@@ -120,6 +125,7 @@ export default function AccountSide() {
               onActive={() => handleActive(k)}
               onEdit={() => handleEdit(k)}
               onDelete={() => handleDelete(k)}
+              isActive={a.address === keystoreSeeds}
             />
           );
         })}
