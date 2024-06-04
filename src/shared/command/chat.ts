@@ -10,6 +10,16 @@ export class ChatCommandFactory {
     };
   }
 
+  static addNetwork(name: string, config: unknown) {
+    return {
+      type: ChatCommand.ChatAddNetwork,
+      data: {
+        name,
+        config,
+      },
+    };
+  }
+
   static changeNetwork(rpc: string) {
     return {
       type: ChatCommand.ChatChangeNetwork,
