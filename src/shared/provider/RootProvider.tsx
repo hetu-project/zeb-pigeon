@@ -1,13 +1,27 @@
 import React, { ReactNode, FC } from 'react';
 import ReduxProvider from './ReduxProvider';
 import LanguageProvider from './LanguageProvider';
+import ChatApiProvider from './ChatApiProvider';
+import { ChakraBaseProvider, extendBaseTheme, theme } from '@chakra-ui/react';
+
+const extendTheme = extendBaseTheme({
+  components: {
+    Alert: theme.components.Alert,
+    Skeleton: theme.components.Skeleton,
+  },
+});
+
 interface RootProviderProps {
   children: ReactNode;
 }
 const RootProvider: FC<RootProviderProps> = ({ children }) => {
   return (
     <LanguageProvider>
-      <ReduxProvider>{children}</ReduxProvider>
+      <ReduxProvider>
+        <ChakraBaseProvider theme={extendTheme}>
+          <ChatApiProvider>{children}</ChatApiProvider>
+        </ChakraBaseProvider>
+      </ReduxProvider>
     </LanguageProvider>
   );
 };

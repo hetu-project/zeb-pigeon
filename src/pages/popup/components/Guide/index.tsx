@@ -3,16 +3,17 @@ import keystoreStorage from '@root/src/shared/storages/keystoreStorage';
 import accountStorage from '@root/src/shared/storages/accountStorage';
 
 import React, { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 import { useForm, useWatch } from 'react-hook-form';
 import bip39 from 'bip39';
 import { Button } from '@chakra-ui/react';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, PlusIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { Mnemonic } from '@src/shared/crypto/mnemonic';
 import { etc } from '@noble/ed25519';
 import { useDropzone } from 'react-dropzone';
 import useStorage from '@root/src/shared/hooks/useStorage';
+import BackendClient from '@root/src/shared/client/BackendClient';
 
 type Inputs = {
   name: string;
@@ -43,16 +44,18 @@ export default function Guide() {
     if (!isValidate) {
       return;
     }
-    const hdKey = Mnemonic.generateHdKeyFromMnemonic(mnemonic);
-    const address = etc.bytesToHex(hdKey.publicKey);
-    keystoreStorage.add(address);
+    // const hdKey = Mnemonic.generateHdKeyFromMnemonic(mnemonic);
+    const hdKey = Mnemonic.generateEd25519FromMnemonic(mnemonic);
+    const address = etc.bytesToHex(hdKey.publicKeyRaw);
     accountStorage.add(address, {
       name: accountName || `Account_${address.substring(0, 6)}`,
       address: address,
       mnemonic,
-      publicKey: etc.bytesToHex(hdKey.publicKey),
+      publicKey: etc.bytesToHex(hdKey.publicKeyRaw),
       privateKey: etc.bytesToHex(hdKey.privateKey),
     });
+    // keystoreStorage.add(address);
+    BackendClient.switchAccount(address);
     navigate('/home/account');
   }, [getValues, navigate]);
 
@@ -77,7 +80,8 @@ export default function Guide() {
       await accountStorage.importAccounts(jsonFile);
       const accounts = jsonFile.accounts || [];
       if (!mainAccount) {
-        await keystoreStorage.set(accounts[0]?.address);
+        // await keystoreStorage.set(accounts[0]?.address);
+        await BackendClient.switchAccount(accounts[0]?.address);
       }
       console.log(accountStorage);
       navigate('/home/account');
@@ -114,8 +118,26 @@ export default function Guide() {
   );
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
+  const match = useMatch('/setting/account/add');
+  const showBack = useMemo(() => {
+    return !!match;
+  }, [match]);
+
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4 relative">
+      {showBack ? (
+        <div className="flex items-center text-xl w-full absolute">
+          <button
+            className="w-12 h-12 flex items-center justify-center"
+            onClick={() => {
+              navigate(-1);
+            }}>
+            <ArrowLeftIcon className="w-5 h-5" />
+          </button>
+        </div>
+      ) : (
+        <></>
+      )}
       <div className="w-full flex px-4">
         <input
           placeholder="Account name"

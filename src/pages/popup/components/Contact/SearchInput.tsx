@@ -1,6 +1,6 @@
 import React from 'react';
 import { PlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { Button } from '@chakra-ui/react';
+// import { Button } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 export default function SearchInput() {
   const navigate = useNavigate();
@@ -15,13 +15,13 @@ export default function SearchInput() {
           className="input input-xs w-full bg-transparent placeholder:zm-text-description"
         />
       </div>
-      <Button
+      <button
         className="p-4 cursor-pointer"
         onClick={() => {
           navigate('/contact/add');
         }}>
         <PlusIcon strokeWidth={2.5} className="w-4 h-4 text-white font-bold" />
-      </Button>
+      </button>
     </div>
   );
 }

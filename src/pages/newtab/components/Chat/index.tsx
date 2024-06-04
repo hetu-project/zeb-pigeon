@@ -3,7 +3,7 @@ import MessageContent from './MessageContent';
 
 export default function Chat() {
   return (
-    <div className="flex h-full ml-2">
+    <div className="flex h-full ml-2 relative">
       <div className="flex-shrink-0 h-full w-80">
         <MessageTab />
       </div>

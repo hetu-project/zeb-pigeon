@@ -1,7 +1,7 @@
 import bip39 from 'bip39';
 import { Buffer } from 'buffer';
 import { HDKey } from '@scure/bip32';
-
+import { HDKey as Ed25519HDKey } from './ed25519/hdkey';
 export type RNG = <
   T extends
     | Int8Array
@@ -71,6 +71,16 @@ export class Mnemonic {
     return hd;
   }
 
+  static generateEd25519FromMnemonic(
+    mnemonic: string,
+    path: string = `m/0/1'/1'`,
+    password: string = '',
+  ): Ed25519HDKey {
+    const seed = bip39.mnemonicToSeedSync(mnemonic, password);
+    const masterSeed = Ed25519HDKey.fromMasterSeed(seed);
+    const hd = masterSeed.derive(path, true);
+    return hd;
+  }
   // static generateMasterSeedFromMnemonic(
   //   mnemonic: string,
   //   password: string = ""

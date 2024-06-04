@@ -11,6 +11,7 @@ import NetworkSide from './components/Account/Side/NetworkSide';
 import AddNetworkForm from './components/Setting/Network/AddNetworkForm';
 import AddContactForm from './components/Contact/AddContactForm';
 import AddDappForm from './components/Dapps/AddDappForm';
+import AccountForm from './components/Setting/Account/AccountForm';
 
 const router = createHashRouter([
   {
@@ -61,6 +62,33 @@ const router = createHashRouter([
           {
             path: 'add',
             element: <AddNetworkForm />,
+          },
+          {
+            path: 'edit',
+            children: [
+              {
+                path: ':name',
+                element: <AddNetworkForm />,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: 'account',
+        children: [
+          {
+            path: 'add',
+            element: <Guide />,
+          },
+          {
+            path: 'edit',
+            children: [
+              {
+                path: ':address',
+                element: <AccountForm />,
+              },
+            ],
           },
         ],
       },

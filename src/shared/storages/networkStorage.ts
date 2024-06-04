@@ -1,49 +1,42 @@
 import { BaseStorage, createStorage, StorageType } from '@src/shared/storages/base';
-interface Account {
-  address: string;
+export interface NetworkConfig {
+  name: string;
+  url: string;
+  rpc: string;
+  agent?: string;
 }
 
-type AccountsMap = Record<string, Account>;
+type NetworkList = NetworkConfig[];
 
-type AccountsMapStorage = BaseStorage<AccountsMap> & {
-  add: (address: string, value: Account) => Promise<boolean>;
-  remove: (address: string) => Promise<boolean>;
+type NetworkListStorage = BaseStorage<NetworkList> & {
+  add: (name: string, value: NetworkConfig) => Promise<boolean>;
+  remove: (name: string) => Promise<boolean>;
 };
 
-const storage = createStorage<AccountsMap>(
-  'networks',
-  {},
-  {
-    storageType: StorageType.Local,
-    liveUpdate: true,
-  },
-);
+const storage = createStorage<NetworkList>('networks', [], {
+  storageType: StorageType.Local,
+  liveUpdate: true,
+});
 
-const keystoreStorage: AccountsMapStorage = {
+const networkStorage: NetworkListStorage = {
   ...storage,
-  add: async (address, account) => {
-    const accountsMap = await storage.get();
-    accountsMap[address] = account;
-    await storage.set(accountsMap);
-
-    // await storage.set((accountsMap) => {
-    //   accountsMap[address] = account;
-    //   return accountsMap;
-    // });
-
+  add: async (name, value) => {
+    const networksList = await storage.get();
+    const newList = networksList.filter(item => {
+      return item.name !== value.name;
+    });
+    newList.push(value);
+    await storage.set(newList);
     return true;
   },
-  remove: async address => {
-    const accountsMap = await storage.get();
-    delete accountsMap[address];
-    await storage.set(accountsMap);
-
-    // await storage.set((accountsMap) => {
-    //   delete accountsMap[address];
-    //   return accountsMap;
-    // });
+  remove: async name => {
+    const networksList = await storage.get();
+    const newList = networksList.filter(item => {
+      return item.name !== name;
+    });
+    await storage.set(newList);
     return true;
   },
 };
 
-export default keystoreStorage;
+export default networkStorage;

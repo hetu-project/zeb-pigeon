@@ -1,22 +1,57 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useMatch } from 'react-router-dom';
 import { Button } from '@chakra-ui/react';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import networkStorage from '@root/src/shared/storages/networkStorage';
+import { useActiveNetwork, useNetworkList } from '@root/src/shared/hooks/network';
+import clsx from 'clsx';
+import BackendClient from '@root/src/shared/client/BackendClient';
 
 type Inputs = {
   name: string;
   url: string;
+  agent: string;
+  rpc: string;
 };
 export default function AddNetworkForm() {
-  const { control, register } = useForm<Inputs>();
-
-  const networkValue = useWatch({
-    control,
-    name: ['name', 'url'],
-  });
-
+  const { register, getValues, setValue } = useForm<Inputs>();
   const navigate = useNavigate();
+  const allNetwork = useNetworkList();
+  const activeNetwork = useActiveNetwork();
+  const match = useMatch('/setting/network/edit/:name');
+  const initParams = useCallback(() => {
+    if (match?.params?.name) {
+      const config = allNetwork.find(network => {
+        return network.name === match.params.name;
+      });
+      if (!config) return;
+      setValue('name', config.name || '');
+      setValue('url', config.url || '');
+      setValue('agent', config.agent || '');
+      setValue('rpc', config.rpc || '');
+    }
+  }, [allNetwork, match?.params?.name, setValue]);
+  useEffect(() => {
+    initParams();
+  }, [initParams]);
+  const handleAddNetwork = useCallback(async () => {
+    const name = getValues('name');
+    const url = getValues('url') || '';
+    const rpc = getValues('rpc') || '';
+    const agent = getValues('agent') || '';
+    if (!name) return;
+    await networkStorage.add(name, {
+      name,
+      url,
+      agent,
+      rpc,
+    });
+    if (!activeNetwork) {
+      BackendClient.activeNetwork(name);
+    }
+    navigate(-1);
+  }, [activeNetwork, getValues, navigate]);
   return (
     <div className="relative">
       <div className="flex items-center text-xl">
@@ -27,17 +62,27 @@ export default function AddNetworkForm() {
           }}>
           <ArrowLeftIcon className="w-5 h-5" />
         </button>
-        <div>{'Add Network'}</div>
+        <div>{match ? 'Edit Network' : 'Add Network'}</div>
       </div>
       <div className="flex flex-col gap-4 mt-10 px-2">
         <div className="">
           <div>{'Name:'}</div>
-          <input className="w-full input input-sm border zm-bg-card" {...register('name')} />
+          <input
+            disabled={!!match}
+            className={clsx('w-full input-sm zm-bg-card border-none rounded-lg', {
+              ' zm-text-description': !!match,
+            })}
+            {...register('name')}
+          />
         </div>
         <div className="">
-          <div>{'Url:'}</div>
-          <input className="w-full input input-sm border zm-bg-card" {...register('url')} />
+          <div>{'Rpc:'}</div>
+          <input className="w-full input input-sm border zm-bg-card" {...register('rpc')} />
         </div>
+        {/* <div className="">
+          <div>{'Agent:'}</div>
+          <input className="w-full input input-sm border zm-bg-card" {...register('agent')} />
+        </div> */}
       </div>
       <div className="flex items-center justify-center gap-4 mt-7">
         <Button
@@ -47,12 +92,7 @@ export default function AddNetworkForm() {
           }}>
           Cancel
         </Button>
-        <Button
-          className=" zm-bg-card rounded-3xl font-medium px-6 py-3 w-28"
-          onClick={() => {
-            console.log(networkValue);
-            navigate(-1);
-          }}>
+        <Button className=" zm-bg-card rounded-3xl font-medium px-6 py-3 w-28" onClick={handleAddNetwork}>
           Save
         </Button>
       </div>
