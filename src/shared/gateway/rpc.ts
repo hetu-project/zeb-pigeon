@@ -24,21 +24,27 @@ export const rpcMessageFetcher = async (id: string) => {
 
   const nodes = clocks.map(item => {
     let neighbor_nodes = [];
-    const mLog = mergeLogs.find(log => log.node_id === item.nodeId);
-    if (mLog) {
-      neighbor_nodes = mergeLogs
-        .filter(l => l.node_id !== item.nodeId)
-        .filter(l => {
-          const r = mLog.e_clock_hash === l.s_clock_hash;
-          // mLog.s_clock_hash === l.e_clock_hash ||
-          // mLog.s_clock_hash === l.s_clock_hash ||
-          mLog.e_clock_hash === l.s_clock_hash;
-          // ||
-          // mLog.e_clock_hash === l.e_clock_hash;
-          return r;
-        })
-        .map(n => n.node_id);
-    }
+    // const mLog = mergeLogs.find(log => log.node_id === item.nodeId);
+    // if (mLog) {
+    //   neighbor_nodes = mergeLogs
+    //     .filter(l => l.node_id !== item.nodeId)
+    //     .filter(l => {
+    //       const r = mLog.e_clock_hash === l.s_clock_hash;
+    //       // mLog.s_clock_hash === l.e_clock_hash ||
+    //       // mLog.s_clock_hash === l.s_clock_hash ||
+    //       mLog.e_clock_hash === l.s_clock_hash;
+    //       // ||
+    //       // mLog.e_clock_hash === l.e_clock_hash;
+    //       return r;
+    //     })
+    //     .map(n => n.node_id);
+    // }
+    neighbor_nodes = mergeLogs
+      .filter(l => l.node_id !== item.nodeId)
+      .filter(l => {
+        return item.clockHash === l.s_clock_hash;
+      })
+      .map(n => n.node_id);
     return {
       node_id: item.nodeId,
       clock: item.clock,
