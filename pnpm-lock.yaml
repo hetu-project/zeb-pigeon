@@ -47,9 +47,6 @@ importers:
       '@noble/hashes':
         specifier: ^1.4.0
         version: 1.4.0
-      '@polkadot/util':
-        specifier: ^12.6.2
-        version: 12.6.2
       '@reduxjs/toolkit':
         specifier: ^2.2.3
         version: 2.2.3(react-redux@9.1.0(@types/react@18.2.37)(react@18.2.0)(redux@5.0.1))(react@18.2.0)
@@ -1507,26 +1504,6 @@ packages:
     resolution: {integrity: sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
 
-  '@polkadot/util@12.6.2':
-    resolution: {integrity: sha512-l8TubR7CLEY47240uki0TQzFvtnxFIO7uI/0GoWzpYD/O62EIAMRsuY01N4DuwgKq2ZWD59WhzsLYmA5K6ksdw==}
-    engines: {node: '>=18'}
-
-  '@polkadot/x-bigint@12.6.2':
-    resolution: {integrity: sha512-HSIk60uFPX4GOFZSnIF7VYJz7WZA7tpFJsne7SzxOooRwMTWEtw3fUpFy5cYYOeLh17/kHH1Y7SVcuxzVLc74Q==}
-    engines: {node: '>=18'}
-
-  '@polkadot/x-global@12.6.2':
-    resolution: {integrity: sha512-a8d6m+PW98jmsYDtAWp88qS4dl8DyqUBsd0S+WgyfSMtpEXu6v9nXDgPZgwF5xdDvXhm+P0ZfVkVTnIGrScb5g==}
-    engines: {node: '>=18'}
-
-  '@polkadot/x-textdecoder@12.6.2':
-    resolution: {integrity: sha512-M1Bir7tYvNappfpFWXOJcnxUhBUFWkUFIdJSyH0zs5LmFtFdbKAeiDXxSp2Swp5ddOZdZgPac294/o2TnQKN1w==}
-    engines: {node: '>=18'}
-
-  '@polkadot/x-textencoder@12.6.2':
-    resolution: {integrity: sha512-4N+3UVCpI489tUJ6cv3uf0PjOHvgGp9Dl+SZRLgFGt9mvxnvpW/7+XBADRMtlG4xi5gaRK7bgl5bmY6OMDsNdw==}
-    engines: {node: '>=18'}
-
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
 
@@ -1747,9 +1724,6 @@ packages:
 
   '@types/babel__traverse@7.20.3':
     resolution: {integrity: sha512-Lsh766rGEFbaxMIDH7Qa+Yha8cMVI3qAK6CHt3OR0YfxOIn5Z54iHiyDRycHrBqeIiqGa20Kpsv1cavfBKkRSw==}
-
-  '@types/bn.js@5.1.5':
-    resolution: {integrity: sha512-V46N0zwKRF5Q00AZ6hWtN0T8gGmDUaUzLWQvHFo5yThtVwK/VCenFY3wXVbOvNfajEpsTfQM4IN9k/d6gUVX3A==}
 
   '@types/chrome@0.0.263':
     resolution: {integrity: sha512-As0vzv99ov3M6ZR7R6VzhMWFZXkPMrFrCEXXVrMN576Cm70fTkj7Df2CF+qEo170JepX50pd11cX6O4DSAtl2Q==}
@@ -7393,35 +7367,6 @@ snapshots:
 
   '@pkgr/core@0.1.1': {}
 
-  '@polkadot/util@12.6.2':
-    dependencies:
-      '@polkadot/x-bigint': 12.6.2
-      '@polkadot/x-global': 12.6.2
-      '@polkadot/x-textdecoder': 12.6.2
-      '@polkadot/x-textencoder': 12.6.2
-      '@types/bn.js': 5.1.5
-      bn.js: 5.2.1
-      tslib: 2.6.2
-
-  '@polkadot/x-bigint@12.6.2':
-    dependencies:
-      '@polkadot/x-global': 12.6.2
-      tslib: 2.6.2
-
-  '@polkadot/x-global@12.6.2':
-    dependencies:
-      tslib: 2.6.2
-
-  '@polkadot/x-textdecoder@12.6.2':
-    dependencies:
-      '@polkadot/x-global': 12.6.2
-      tslib: 2.6.2
-
-  '@polkadot/x-textencoder@12.6.2':
-    dependencies:
-      '@polkadot/x-global': 12.6.2
-      tslib: 2.6.2
-
   '@popperjs/core@2.11.8': {}
 
   '@probe.gl/env@3.6.0':
@@ -7614,10 +7559,6 @@ snapshots:
   '@types/babel__traverse@7.20.3':
     dependencies:
       '@babel/types': 7.23.3
-
-  '@types/bn.js@5.1.5':
-    dependencies:
-      '@types/node': 20.8.10
 
   '@types/chrome@0.0.263':
     dependencies:

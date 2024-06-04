@@ -20,7 +20,7 @@ import {
 import { useActiveAccount } from '@root/src/shared/hooks/accounts';
 import { MessageItem } from '@root/src/shared/storages/messageStorage';
 // import MessageGraph from './MessageGraph';
-import { useMessageGraph } from '@root/src/shared/hooks/messages';
+// import { useMessageGraph } from '@root/src/shared/hooks/messages';
 import useSWR from 'swr';
 import NoData from '@root/src/shared/components/NoData';
 import { rpcMessageFetcher } from '@root/src/shared/gateway/rpc';
@@ -34,11 +34,11 @@ export interface MessageCardProps {
 export function MessageCard({ position = 'left', message, messageId }: MessageCardProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [showGraphs, setShowGraphs] = useState(false);
-  const graph = useMessageGraph(message);
-  const { data, isLoading } = useSWR(!graph && showGraphs ? `${messageId}` : null, rpcMessageFetcher);
+  // const graph = useMessageGraph(message);
+  const { data, isLoading } = useSWR(showGraphs ? `${messageId}` : null, rpcMessageFetcher);
   const result = useMemo(() => {
-    return graph || data;
-  }, [data, graph]);
+    return data;
+  }, [data]);
   return (
     <div
       className={clsx('flex items-center rounded-xl relative', {
@@ -118,7 +118,7 @@ export function MessageCard({ position = 'left', message, messageId }: MessageCa
               ) : (
                 <>
                   {/* {result ? <MessageGraph graphData={data} /> : <MessageGraph  graphData={data}/>} */}
-                  {result ? <NodeGraph /> : <NodeGraph />}
+                  {result ? <NodeGraph nodes={result} /> : <NodeGraph nodes={result} />}
                 </>
               )}
             </div>

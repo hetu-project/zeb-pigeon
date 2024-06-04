@@ -51,7 +51,7 @@ export class BackendChat {
     const outMsg = await this.chatApi.accountSendMessage(from, to, message, fromNode, toNode, signature);
     const storageKey = messageStorageSortKey(from, to);
     const mf = {
-      id: u8aToHex(outMsg.id, -1, false),
+      id: u8aToHex(outMsg.id),
       from,
       to,
       message,
@@ -68,6 +68,7 @@ export class BackendChat {
     if (!address) return;
     // await keystoreStorage.set(address);
     const data = await this.chatApi.getEndpoint(address);
+    if (!data) return;
     const url = new URL(data.wsAddr);
     const wsUrl = `${data.wsAddr}/ws${url.port}`;
     await this.changeEndPoint(wsUrl);
@@ -78,18 +79,19 @@ export class BackendChat {
     if (!address) return;
     await keystoreStorage.set(address);
     const data = await this.chatApi.getEndpoint(address);
+    if (!data) return;
     const url = new URL(data.wsAddr);
     const wsUrl = `${data.wsAddr}/ws${url.port}`;
     await this.changeEndPoint(wsUrl);
-    this.chatApi.provider.websocket.send(hexToU8a(address));
+    this.chatApi?.provider?.websocket?.send(hexToU8a(address));
   };
 
   async onMessage(chatMessage: ChatMessage) {
     try {
-      const from = u8aToString(chatMessage.from);
-      const to = u8aToString(chatMessage.to);
+      const from = u8aToHex(chatMessage.from);
+      const to = u8aToHex(chatMessage.to);
       const key = messageStorageSortKey(from, to);
-      const id = u8aToHex(chatMessage.id, -1, false);
+      const id = u8aToHex(chatMessage.id);
 
       const textMessage = u8aToString(chatMessage.data);
       const receiveMessage = {
@@ -99,6 +101,7 @@ export class BackendChat {
         message: textMessage,
         sign: '',
       };
+      console.log('onMessage', key, receiveMessage);
       await messagesStorage.addMessage(key, receiveMessage);
     } catch (error) {
       console.error('message decode error', error);

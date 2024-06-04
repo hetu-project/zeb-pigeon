@@ -1,7 +1,7 @@
 import { EventEmitter } from 'eventemitter3';
-import { noop } from '@polkadot/util';
 import { ChatMessage } from '@root/src/proto/ChatMessage';
 import { InboundMsg } from '@root/src/proto/ZMsg';
+export const noop = () => {};
 
 const RETRY_DELAY = 5_000;
 
@@ -85,6 +85,7 @@ export default class WsProvider {
       const inboundMsg = InboundMsg.decode(new Uint8Array(buffer));
 
       const chatMessage = ChatMessage.decode(inboundMsg.data);
+      chatMessage.id = inboundMsg.id;
       console.log('onSocketMessage buffer', chatMessage);
       console.log('onSocketMessage chat Message', chatMessage);
       this.eventemitter.emit('account_receiveMessage', chatMessage);

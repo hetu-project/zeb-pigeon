@@ -2,8 +2,9 @@ import { ChatMessage, ChatType } from '@root/src/proto/ChatMessage';
 import WsProvider from './provider/WsProvider';
 import { Clock, ClockInfo, OutboundMsg, ZChat, ZMessage, ZType } from '@src/proto/ZMsg';
 
-import { hexToU8a, stringToU8a, u8aToHex, u8aToU8a } from '@src/shared/utils';
+import { hexToU8a, stringToU8a, u8aToHex } from '@src/shared/utils';
 import { blake2s } from '@noble/hashes/blake2s';
+import { hexToBytes } from '@noble/hashes/utils';
 // import axios from 'axios';
 export interface ChatApiOptions {
   provider?: WsProvider;
@@ -11,7 +12,7 @@ export interface ChatApiOptions {
 }
 export default class ChatApi {
   provider: WsProvider;
-  seedRpcServer = 'http://127.0.0.1:12345/rpc12345';
+  seedRpcServer = '';
   account: string;
   constructor(options?: ChatApiOptions) {
     if (options?.provider) {
@@ -50,6 +51,9 @@ export default class ChatApi {
     };
     console.log('this.seedRpcServer', this.seedRpcServer);
     console.log('this.seedRpcServer', body);
+    if (!this.seedRpcServer) {
+      return;
+    }
 
     // const res = await axios.post(this.seedRpcServer, body);
     const res = await fetch(this.seedRpcServer, {
@@ -88,14 +92,14 @@ export default class ChatApi {
       // publicKey: u8aToU8a(from),
       data: stringToU8a(message),
       signature: signature,
-      from: u8aToU8a(from),
-      to: u8aToU8a(to),
+      from: hexToBytes(from),
+      to: hexToBytes(to),
     });
     const chatBuffer = ChatMessage.encode(chatMessage).finish();
     const hashId = blake2s(chatBuffer);
     const clockId = blake2s(hashId);
     const clockValues = {
-      [u8aToHex(clockId, -1, false)]: '1',
+      [u8aToHex(clockId)]: '1',
     };
     const clock = Clock.create({
       values: clockValues,
