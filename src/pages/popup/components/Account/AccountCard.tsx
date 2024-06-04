@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
-import { Cog6ToothIcon } from '@heroicons/react/24/solid';
+import { Cog6ToothIcon, SignalIcon } from '@heroicons/react/24/solid';
 import { useNavigate } from 'react-router-dom';
+import BackendClient from '@root/src/shared/client/BackendClient';
 export interface AccountCardProps {
   address?: string;
   name?: string;
@@ -22,7 +23,25 @@ export default function AccountCard({
         {(address?.[0] || 'A').toUpperCase()}
       </div>
       <div className=" overflow-hidden">
-        <div className=" font-medium text-base">{name}</div>
+        <div className="flex items-center justify-between">
+          <div className=" font-medium text-base">{name}</div>
+          <button
+            className=" h-6 w-6 flex items-center justify-center btn-ghost"
+            onClick={() => {
+              BackendClient.switchAccount(address);
+            }}>
+            <label className="swap swap-flip text-9xl">
+              {/* this hidden checkbox controls the state */}
+              <input type="checkbox" />
+              <div className="swap-on">
+                <SignalIcon className="h-4 w-4" />
+              </div>
+              <div className="swap-off">
+                <SignalIcon className="h-4 w-4" />
+              </div>
+            </label>
+          </button>
+        </div>
         <div className=" truncate zm-text-description text-sm">{address}</div>
       </div>
       <button

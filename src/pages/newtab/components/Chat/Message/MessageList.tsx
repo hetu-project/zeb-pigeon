@@ -35,7 +35,7 @@ export function MessageCard({ position = 'left', message, messageId }: MessageCa
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [showGraphs, setShowGraphs] = useState(false);
   // const graph = useMessageGraph(message);
-  const { data, isLoading } = useSWR(showGraphs ? `${messageId}` : null, rpcMessageFetcher);
+  const { data, isLoading } = useSWR(showGraphs ? `${messageId}` : null, rpcMessageFetcher, { errorRetryCount: 0 });
   const result = useMemo(() => {
     return data;
   }, [data]);
@@ -118,9 +118,18 @@ export function MessageCard({ position = 'left', message, messageId }: MessageCa
               ) : (
                 <>
                   {/* {result ? <MessageGraph graphData={data} /> : <MessageGraph  graphData={data}/>} */}
-                  {result ? <NodeGraph nodes={result} /> : <NodeGraph nodes={result} />}
+                  {result ? (
+                    <NodeGraph nodes={result} />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-white w-80 h-80">
+                      <NoData />
+                      <div className="pb-16 text-white text-xl">Please try again later</div>
+                    </div>
+                  )}
                 </>
               )}
+              {/* <div>{JSON.stringify(error)}</div>
+              <div>{JSON.stringify(result)}</div> */}
             </div>
           </ModalBody>
           <ModalFooter>
