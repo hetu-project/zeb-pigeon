@@ -10,7 +10,7 @@ export const rpcMessageFetcher = async (id: string) => {
   // console.log('rpcMessageFetcher', graphData);
   const clocks = graphData.message.clock_json_str_list
     .map(item => JSON.parse(item))
-    .map(item => ({ nodeId: item.NodeId, clock: JSON.parse(item.Clock) }));
+    .map(item => ({ nodeId: item.NodeId, clockHash: item.ClockHash, clock: JSON.parse(item.Clock) }));
   const mergeLogs = [
     graphData.mergeLog.start_merge_logs_query || [],
     graphData.mergeLog.end_merge_logs_query || [],
@@ -29,11 +29,12 @@ export const rpcMessageFetcher = async (id: string) => {
       neighbor_nodes = mergeLogs
         .filter(l => l.node_id !== item.nodeId)
         .filter(l => {
-          const r =
-            mLog.s_clock_hash === l.e_clock_hash ||
-            mLog.s_clock_hash === l.s_clock_hash ||
-            mLog.e_clock_hash === l.s_clock_hash ||
-            mLog.e_clock_hash === l.e_clock_hash;
+          const r = mLog.e_clock_hash === l.s_clock_hash;
+          // mLog.s_clock_hash === l.e_clock_hash ||
+          // mLog.s_clock_hash === l.s_clock_hash ||
+          mLog.e_clock_hash === l.s_clock_hash;
+          // ||
+          // mLog.e_clock_hash === l.e_clock_hash;
           return r;
         })
         .map(n => n.node_id);
@@ -46,7 +47,7 @@ export const rpcMessageFetcher = async (id: string) => {
   });
 
   // console.log('getGraphByMessageId', result);
-  // console.log('getGraphByMessageId', nodes);
+  console.log('getGraphByMessageId', nodes);
   return nodes;
 };
 

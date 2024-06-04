@@ -85,6 +85,7 @@ export default class WsProvider {
       const inboundMsg = InboundMsg.decode(new Uint8Array(buffer));
 
       const chatMessage = ChatMessage.decode(inboundMsg.data);
+      chatMessage.id = inboundMsg.id;
       console.log('onSocketMessage buffer', chatMessage);
       console.log('onSocketMessage chat Message', chatMessage);
       this.eventemitter.emit('account_receiveMessage', chatMessage);
